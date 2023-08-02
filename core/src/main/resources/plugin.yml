@@ -16,8 +16,8 @@ softdepend:
   - ChestSort
   - Towny
   - PEconomy
-  - load-after:
-      - Novaconomy
+load-after:
+  - Novaconomy
 commands:
   ultracosmetics:
     aliases: [ uc, cosmetics ]
