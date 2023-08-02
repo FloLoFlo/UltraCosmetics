@@ -119,7 +119,7 @@ subprojects { subproj ->
 
         // Spigot
         maven {
-            url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
+            url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/org/spigotmc/plugin-annotations/'
         }
 
         // WorldGuard
