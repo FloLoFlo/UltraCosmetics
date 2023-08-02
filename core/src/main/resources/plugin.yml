@@ -17,7 +17,7 @@ softdepend:
   - Towny
   - PEconomy
 load-after:
-  - Novaconomy
+  - name: Novaconomy
 commands:
   ultracosmetics:
     aliases: [ uc, cosmetics ]
