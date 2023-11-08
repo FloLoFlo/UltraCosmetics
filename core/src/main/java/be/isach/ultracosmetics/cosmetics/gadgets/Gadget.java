@@ -194,6 +194,7 @@ public abstract class Gadget extends Cosmetic<GadgetType> implements UnmovableIt
 
     public void updateItemStack() {
         itemStack = ItemFactory.create(getType().getMaterial(), getItemDisplayName(), MessageManager.getLegacyMessage("Gadgets.Lore"));
+        ItemFactory.applyCosmeticMarker(itemStack);
     }
 
     public void equipItem() {
@@ -221,8 +222,9 @@ public abstract class Gadget extends Cosmetic<GadgetType> implements UnmovableIt
         if (stack == null || stack.getType() != getItemStack().getType() || !stack.hasItemMeta() || !stack.getItemMeta().hasDisplayName()) {
             return false;
         }
-        // Case sensitivity causes issues with hex color codes for some reason
-        return stack.getItemMeta().getDisplayName().toLowerCase().endsWith(MessageManager.toLegacy(getTypeName()).toLowerCase());
+
+        // Case sensitivity causes issues with hex color codes for some reason, even with MiniMessage
+        return stack.getItemMeta().getDisplayName().toLowerCase().equals(MessageManager.toLegacy(getItemDisplayName()).toLowerCase());
     }
 
     @Override
@@ -270,7 +272,7 @@ public abstract class Gadget extends Cosmetic<GadgetType> implements UnmovableIt
             }
             return;
         }
-        ultraPlayer.setCoolDown(getType(), getType().getCountdown(), getType().getRunTime());
+        ultraPlayer.setCooldown(getType(), getType().getCountdown(), getType().getRunTime());
         if (requiresAmmo && !inShowroom) {
             ultraPlayer.removeAmmo(getType());
             equipItem();

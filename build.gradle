@@ -2,14 +2,15 @@ allprojects {
     apply plugin: 'java-library'
     apply plugin: 'eclipse'
     apply plugin: 'idea'
+    apply plugin: 'maven-publish'
 
     eclipse.classpath.downloadJavadoc = true
     eclipse.classpath.downloadSources = true
     idea.module.downloadJavadoc = true
     idea.module.downloadSources = true
 
-    group = 'be.isach'
-    version = '3.3'
+    group = 'be.isach.UltraCosmetics'
+    version = '3.4.1'
     def classifier = 'RELEASE'
 
     tasks.withType(JavaCompile) {
@@ -140,6 +141,11 @@ subprojects { subproj ->
         // Towny
         maven {
             url = 'https://repo.glaremasters.me/repository/towny/'
+        }
+
+        // PlayerAuctions
+        maven {
+            url = 'https://repo.olziedev.com/'
         }
 
         // Vault

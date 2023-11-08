@@ -2,17 +2,21 @@ package be.isach.ultracosmetics.menu;
 
 import be.isach.ultracosmetics.UltraCosmetics;
 import be.isach.ultracosmetics.config.MessageManager;
+import be.isach.ultracosmetics.config.SettingsManager;
 import be.isach.ultracosmetics.cosmetics.Category;
 import be.isach.ultracosmetics.cosmetics.type.GadgetType;
+import be.isach.ultracosmetics.events.UCKeyPurchaseEvent;
 import be.isach.ultracosmetics.menu.menus.*;
 import be.isach.ultracosmetics.player.UltraPlayer;
 import be.isach.ultracosmetics.util.ItemFactory;
-import be.isach.ultracosmetics.util.SmartLogger;
+import com.cryptomorin.xseries.XMaterial;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,7 +31,8 @@ public class Menus {
     private final UltraCosmetics ultraCosmetics;
     private final Map<Category, CosmeticMenu<?>> categoryMenus = new HashMap<>();
     private Menu mainMenu;
-    private final CustomMainMenu customMainMenu;
+    private MenuPurchaseFactory menuPurchaseFactory = StandardMenuPurchase::new;
+    private ItemStack treasureKeyBaseItem = XMaterial.TRIPWIRE_HOOK.parseItem();
 
     public Menus(UltraCosmetics ultraCosmetics) {
         this.ultraCosmetics = ultraCosmetics;
@@ -46,20 +51,13 @@ public class Menus {
         categoryMenus.put(Category.SUITS_LEGGINGS, ms);
         categoryMenus.put(Category.SUITS_BOOTS, ms);
         this.mainMenu = new MenuMain(ultraCosmetics);
-        File customFile = CustomMainMenu.getFile(ultraCosmetics);
-        if (!customFile.exists()) {
-            ultraCosmetics.saveResource(customFile.getName(), false);
-        }
-        CustomMainMenu customMenu = null;
-        try {
-            customMenu = new CustomMainMenu(ultraCosmetics);
-        } catch (IllegalArgumentException e) {
-            ultraCosmetics.getSmartLogger().write(SmartLogger.LogLevel.WARNING, "Failed to load custom main menu, please run it through a YAML checker");
-        }
-        customMainMenu = customMenu;
         // Load the class so it's available on disable, when we can't load more classes.
-        // Sometimes this happens when hotswapping the jar
+        // Otherwise sometimes errors occur when hotswapping the jar
         new CosmeticsInventoryHolder();
+    }
+
+    public Menu getMainMenu() {
+        return mainMenu;
     }
 
     public void setMainMenu(Menu menu) {
@@ -77,10 +75,6 @@ public class Menus {
             Bukkit.dispatchCommand(ultraCosmetics.getServer().getConsoleSender(), command);
             return;
         }
-        if (customMainMenu != null && customMainMenu.isEnabled()) {
-            customMainMenu.open(ultraPlayer);
-            return;
-        }
         mainMenu.open(ultraPlayer);
     }
 
@@ -96,21 +90,76 @@ public class Menus {
      * Opens Ammo Purchase Menu.
      */
     public void openAmmoPurchaseMenu(GadgetType type, UltraPlayer player, Runnable menuReturnFunc) {
+        int price = ultraCosmetics.getEconomyHandler().calculateDiscountPrice(player.getBukkitPlayer(), type.getAmmoPrice());
         String itemName = MessageManager.getLegacyMessage("Buy-Ammo-Description",
                 Placeholder.unparsed("amount", String.valueOf(type.getResultAmmoAmount())),
-                Placeholder.unparsed("price", String.valueOf(type.getAmmoPrice())),
+                Placeholder.unparsed("price", String.valueOf(price)),
                 Placeholder.component("gadgetname", type.getName())
         );
         ItemStack display = ItemFactory.create(type.getMaterial(), itemName);
         PurchaseData pd = new PurchaseData();
-        pd.setPrice(type.getAmmoPrice());
+        pd.setBasePrice(type.getAmmoPrice());
         pd.setShowcaseItem(display);
         pd.setOnPurchase(() -> {
             player.addAmmo(type, type.getResultAmmoAmount());
             menuReturnFunc.run();
         });
         pd.setOnCancel(menuReturnFunc);
-        MenuPurchase mp = new MenuPurchase(ultraCosmetics, MessageManager.getMessage("Menu.Buy-Ammo.Title"), pd);
+        MenuPurchase mp = menuPurchaseFactory.createPurchaseMenu(ultraCosmetics, MessageManager.getMessage("Menu.Buy-Ammo.Title"), pd);
         player.getBukkitPlayer().openInventory(mp.getInventory(player));
+    }
+
+    public MenuPurchaseFactory getMenuPurchaseFactory() {
+        return menuPurchaseFactory;
+    }
+
+    public void setMenuPurchaseFactory(MenuPurchaseFactory factory) {
+        this.menuPurchaseFactory = factory;
+    }
+
+    public ItemStack getTreasureKeyBaseItem() {
+        return treasureKeyBaseItem;
+    }
+
+    public void setTreasureKeyBaseItem(ItemStack treasureKeyBaseItem) {
+        this.treasureKeyBaseItem = treasureKeyBaseItem;
+    }
+
+    /**
+     * Opens the Key Purchase Menu.
+     */
+    public void openKeyPurchaseMenu(UltraPlayer ultraPlayer) {
+        if (!ultraCosmetics.getEconomyHandler().isUsingEconomy()) return;
+        Player player = ultraPlayer.getBukkitPlayer();
+
+        int price = SettingsManager.getConfig().getInt("TreasureChests.Key-Price");
+        if (price < 1) return;
+
+        if (!player.hasPermission("ultracosmetics.treasurechests.buykey")) {
+            player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You don't have permission to buy Treasure Keys.");
+            return;
+        }
+        int discountPrice = ultraCosmetics.getEconomyHandler().calculateDiscountPrice(player, price);
+        TagResolver.Single pricePlaceholder = Placeholder.unparsed("price", String.valueOf(discountPrice));
+        ItemStack itemStack = ItemFactory.rename(getTreasureKeyBaseItem(), MessageManager.getLegacyMessage("Buy-Treasure-Key-ItemName", pricePlaceholder));
+
+        PurchaseData pd = new PurchaseData();
+        pd.setBasePrice(discountPrice);
+        pd.setShowcaseItem(itemStack);
+        pd.setCanPurchase(() -> {
+            UCKeyPurchaseEvent event = new UCKeyPurchaseEvent(ultraPlayer, discountPrice);
+            Bukkit.getPluginManager().callEvent(event);
+            if (event.isCancelled()) return false;
+            pd.setBasePrice(event.getPrice());
+            return true;
+        });
+        Menus menus = ultraCosmetics.getMenus();
+        pd.setOnPurchase(() -> {
+            ultraPlayer.addKey();
+            menus.openMainMenu(ultraPlayer);
+        });
+        pd.setOnCancel(() -> menus.openMainMenu(ultraPlayer));
+        MenuPurchase mp = menus.getMenuPurchaseFactory().createPurchaseMenu(ultraCosmetics, MessageManager.getMessage("Buy-Treasure-Key"), pd);
+        Bukkit.getScheduler().runTaskLater(ultraCosmetics, () -> player.openInventory(mp.getInventory(ultraPlayer)), 1);
     }
 }

@@ -13,6 +13,7 @@ import be.isach.ultracosmetics.economy.EconomyHandler;
 import be.isach.ultracosmetics.hook.ChestSortHook;
 import be.isach.ultracosmetics.hook.DiscordSRVHook;
 import be.isach.ultracosmetics.hook.PlaceholderHook;
+import be.isach.ultracosmetics.hook.PlayerAuctionsHook;
 import be.isach.ultracosmetics.hook.TownyHook;
 import be.isach.ultracosmetics.listeners.Listener113;
 import be.isach.ultracosmetics.listeners.MainListener;
@@ -21,6 +22,7 @@ import be.isach.ultracosmetics.listeners.PriorityListener;
 import be.isach.ultracosmetics.listeners.UnmovableItemListener;
 import be.isach.ultracosmetics.menu.CosmeticsInventoryHolder;
 import be.isach.ultracosmetics.menu.Menus;
+import be.isach.ultracosmetics.menu.menus.CustomMainMenu;
 import be.isach.ultracosmetics.mysql.MySqlConnectionManager;
 import be.isach.ultracosmetics.permissions.PermissionManager;
 import be.isach.ultracosmetics.player.UltraPlayerManager;
@@ -51,6 +53,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -68,6 +72,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -131,6 +138,8 @@ public class UltraCosmetics extends JavaPlugin {
 
     private ChestSortHook chestSortHook;
 
+    private PlayerAuctionsHook playerAuctionsHook;
+
     private UnmovableItemListener unmovableItemListener;
     private TreasureChestManager treasureChestManager;
 
@@ -150,6 +159,8 @@ public class UltraCosmetics extends JavaPlugin {
     private Set<Problem> loadTimeProblems = new HashSet<>();
 
     private final List<String> supportedLanguages = new ArrayList<>();
+
+    private final List<UCAddon> addons = new ArrayList<>();
 
     /**
      * Called when plugin is loaded. Used for registering WorldGuard flags as recommended in API documentation.
@@ -298,8 +309,8 @@ public class UltraCosmetics extends JavaPlugin {
         registerListeners();
 
         // Set up Cosmetics config.
-        CosmeticType.registerAll();
         CosmeticType.loadCustomCosmetics();
+        CosmeticType.registerAll();
 
         // Can't use Category.MORPHS.isEnabled() here because it checks whether LibsDisguises is enabled on its own
         if (SettingsManager.getConfig().getBoolean("Categories-Enabled." + Category.MORPHS.getConfigPath())) {
@@ -360,7 +371,7 @@ public class UltraCosmetics extends JavaPlugin {
         new FallDamageManager().runTaskTimerAsynchronously(this, 0, 1);
         // No need to worry about the invalid world checker if all worlds are allowed
         if (!config.getStringList("Enabled-Worlds").contains("*")) {
-            new InvalidWorldChecker(this).runTaskTimerAsynchronously(this, 0, 5);
+            new InvalidWorldChecker(this).runTaskTimer(this, 0, 5);
         }
         if (config.getBoolean("Prevent-Cosmetics-In-Vanish")) {
             new VanishChecker(this).runTaskTimerAsynchronously(this, 100, 100);
@@ -374,25 +385,15 @@ public class UltraCosmetics extends JavaPlugin {
             getSmartLogger().write("Hooked into DiscordSRV");
         }
 
-        if (getServer().getPluginManager().isPluginEnabled("ChestSort")
-                && SettingsManager.getConfig().getBoolean("ChestSort-Hook", true)) {
-            chestSortHook = new ChestSortHook(this);
-            getServer().getPluginManager().registerEvents(chestSortHook, this);
-            getSmartLogger().write();
-            getSmartLogger().write("Hooked into ChestSort");
-        }
-
-        if (getServer().getPluginManager().isPluginEnabled("Towny")
-                && SettingsManager.getConfig().getBoolean("Towny-Hook", true)) {
-            getServer().getPluginManager().registerEvents(new TownyHook(), this);
-            getSmartLogger().write();
-            getSmartLogger().write("Hooked into Towny");
-        }
+        chestSortHook = hookIfEnabled("ChestSort", () -> new ChestSortHook(this));
+        hookIfEnabled("Towny", TownyHook::new);
+        playerAuctionsHook = hookIfEnabled("PlayerAuctions", () -> new PlayerAuctionsHook(this), 1.24f);
 
         // Start up bStats
         setupMetrics();
 
         this.menus = new Menus(this);
+        setupCustomMainMenu();
 
         try {
             config.save(file);
@@ -438,6 +439,60 @@ public class UltraCosmetics extends JavaPlugin {
         playerManager.dispose();
 
         UltraCosmeticsData.get().getVersionManager().getModule().disable();
+    }
+
+    public void reload() {
+        getLogger().info("Shutting down...");
+        shutdown();
+        CosmeticType.removeAllTypes();
+        getLogger().info("Starting up...");
+        start();
+        for (UCAddon addon : addons) {
+            addon.reload(this);
+        }
+    }
+
+    /**
+     * Addons registered with this function will be notified after UC finishes reloading.
+     *
+     * @param addon The addon to register
+     */
+    public void registerAddon(UCAddon addon) {
+        if (addons.contains(addon)) {
+            throw new IllegalArgumentException("This addon has already been registered!");
+        }
+        addons.add(addon);
+    }
+
+    private <T extends Listener> T hookIfEnabled(String pluginName, Supplier<T> hookSupplier) {
+        if (!getServer().getPluginManager().isPluginEnabled(pluginName)
+                || !SettingsManager.getConfig().getBoolean(pluginName + "-Hook", true)) {
+            return null;
+        }
+        T hook = hookSupplier.get();
+        getServer().getPluginManager().registerEvents(hook, this);
+        getSmartLogger().write();
+        getSmartLogger().write("Hooked into " + pluginName);
+        return hook;
+    }
+
+    private <T extends Listener> T hookIfEnabled(String pluginName, Supplier<T> hookSupplier, float requiredVersion) {
+        if (!getServer().getPluginManager().isPluginEnabled(pluginName)) {
+            return null;
+        }
+        Plugin plugin = getServer().getPluginManager().getPlugin(pluginName);
+        Pattern pattern = Pattern.compile("^\\d+\\.\\d+");
+        Matcher matcher = pattern.matcher(plugin.getDescription().getVersion());
+        if (matcher.find()) {
+            float version = Float.parseFloat(matcher.group());
+            if (version < requiredVersion) {
+                getSmartLogger().write(LogLevel.WARNING, pluginName + " " + requiredVersion + " or later is required for UC to hook it.");
+                return null;
+            }
+        } else {
+            getSmartLogger().write(LogLevel.WARNING, "Failed to parse " + pluginName + " version, hoping it's ok...");
+        }
+        return hookIfEnabled(pluginName, hookSupplier);
     }
 
     /**
@@ -505,6 +560,7 @@ public class UltraCosmetics extends JavaPlugin {
 
         configMigration();
         boolean lootCommandsPresent = config.isConfigurationSection("TreasureChests.Loots.Commands");
+        boolean designsPresent = config.isConfigurationSection("TreasureChests.Designs") && !config.getConfigurationSection("TreasureChests.Designs").getKeys(false).isEmpty();
 
         for (String key : defaults.getKeys(true)) {
             if (key.startsWith("TreasureChests.Loots.Commands.") && lootCommandsPresent
@@ -512,6 +568,7 @@ public class UltraCosmetics extends JavaPlugin {
                 continue;
             }
             if (key.startsWith("TreasureChests.Locations.default")) continue;
+            if (key.startsWith("TreasureChests.Designs") && designsPresent) continue;
             config.addDefault(key, defaults.get(key), defaults.comments(key));
         }
         for (String key : defaults.getConfigurationSection("TreasureChests.Loots").getKeys(false)) {
@@ -608,6 +665,22 @@ public class UltraCosmetics extends JavaPlugin {
             builder.append("\n").append(mm.serialize(deserializer.deserialize(parts[i])));
         }
         config.set(path, builder.toString());
+    }
+
+    private void setupCustomMainMenu() {
+        File customFile = CustomMainMenu.getFile(this);
+        if (!customFile.exists()) {
+            saveResource(customFile.getName(), false);
+        }
+        CustomMainMenu customMenu = null;
+        try {
+            customMenu = new CustomMainMenu(this);
+        } catch (IllegalArgumentException e) {
+            getSmartLogger().write(SmartLogger.LogLevel.WARNING, "Failed to load custom main menu, please run it through a YAML checker");
+        }
+        if (customMenu.isEnabled()) {
+            menus.setMainMenu(customMenu);
+        }
     }
 
     /**

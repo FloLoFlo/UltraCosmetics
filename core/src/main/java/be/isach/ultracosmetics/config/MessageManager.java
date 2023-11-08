@@ -129,6 +129,16 @@ public class MessageManager {
         if (messagesConfig.getString("Prefix") != null && messagesConfig.getString("Prefix").startsWith("&")) {
             minimessageMigration();
         }
+        String noPermissionMessage = messagesConfig.getString("No-Permission");
+        if (noPermissionMessage != null && noPermissionMessage.startsWith("<prefix> ")) {
+            messagesConfig.set("No-Permission", noPermissionMessage.substring(9));
+        }
+        ConfigurationSection newLoots = messagesConfig.getConfigurationSection("Treasure-Chests-Loot-Messages");
+        for (String key : newLoots.getKeys(false)) {
+            if (newLoots.getString(key).contains("%")) {
+                newLoots.set(key, newLoots.getString(key).replaceAll("%(\\w+)%", "<$1>"));
+            }
+        }
         for (String key : defaults.getKeys(true)) {
             addMessageInternal(key, defaults.getString(key));
         }
@@ -249,7 +259,9 @@ public class MessageManager {
         for (String key : loots.getKeys(false)) {
             String path = key + ".Message.message";
             if (loots.isString(path)) {
-                messagesConfig.set("Treasure-Chests-Loot-Messages." + key, serializer.serialize(deserializer.deserialize(loots.getString(path))));
+                String message = serializer.serialize(deserializer.deserialize(loots.getString(path)));
+                message = message.replaceAll("%(\\w+)%", "<$1>");
+                messagesConfig.set("Treasure-Chests-Loot-Messages." + key, message);
                 loots.set(path, null);
             }
         }

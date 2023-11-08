@@ -11,13 +11,14 @@ import be.isach.ultracosmetics.cosmetics.type.MorphType;
 import be.isach.ultracosmetics.cosmetics.type.PetType;
 import be.isach.ultracosmetics.menu.Button;
 import be.isach.ultracosmetics.menu.ClickData;
+import be.isach.ultracosmetics.menu.MenuPurchase;
+import be.isach.ultracosmetics.menu.MenuPurchaseFactory;
 import be.isach.ultracosmetics.menu.PurchaseData;
 import be.isach.ultracosmetics.menu.buttons.togglecosmetic.ToggleCosmeticButton;
 import be.isach.ultracosmetics.menu.buttons.togglecosmetic.ToggleEmoteCosmeticButton;
 import be.isach.ultracosmetics.menu.buttons.togglecosmetic.ToggleGadgetCosmeticButton;
 import be.isach.ultracosmetics.menu.buttons.togglecosmetic.ToggleMorphCosmeticButton;
 import be.isach.ultracosmetics.menu.buttons.togglecosmetic.TogglePetCosmeticButton;
-import be.isach.ultracosmetics.menu.menus.MenuPurchase;
 import be.isach.ultracosmetics.permissions.PermissionManager;
 import be.isach.ultracosmetics.player.UltraPlayer;
 import be.isach.ultracosmetics.util.ItemFactory;
@@ -39,8 +40,6 @@ public abstract class CosmeticButton implements Button {
     private final boolean ignoreTooltip;
     private final boolean allowPurchase = SettingsManager.getConfig().getBoolean("No-Permission.Allow-Purchase");
     private final Component noPermissionMessage = MessageManager.getMessage("No-Permission");
-    private final String clickToPurchaseLore;
-    private final String itemName;
     private ItemStack stack = null;
 
     public static CosmeticButton fromType(CosmeticType<?> cosmeticType, UltraPlayer ultraPlayer, UltraCosmetics ultraCosmetics) {
@@ -66,11 +65,6 @@ public abstract class CosmeticButton implements Button {
         this.cosmeticType = cosmeticType;
         this.price = SettingsManager.getConfig().getInt(cosmeticType.getConfigPath() + ".Purchase-Price");
         this.ignoreTooltip = ignoreTooltip;
-        this.itemName = MessageManager.getLegacyMessage("Buy-Cosmetic-Description",
-                Placeholder.unparsed("price", String.valueOf(price)),
-                Placeholder.component("gadgetname", cosmeticType.getName())
-        );
-        this.clickToPurchaseLore = MessageManager.getLegacyMessage("Click-To-Purchase", Placeholder.unparsed("price", String.valueOf(price)));
     }
 
     @Override
@@ -125,10 +119,13 @@ public abstract class CosmeticButton implements Button {
                 ultraPlayer.sendMessage(noPermissionMessage);
                 return true;
             }
-
+            String itemName = MessageManager.getLegacyMessage("Buy-Cosmetic-Description",
+                    Placeholder.unparsed("price", String.valueOf(ultraCosmetics.getEconomyHandler().calculateDiscountPrice(ultraPlayer.getBukkitPlayer(), price))),
+                    Placeholder.component("gadgetname", cosmeticType.getName())
+            );
             ItemStack display = ItemFactory.rename(cosmeticType.getItemStack(), itemName);
             PurchaseData pd = new PurchaseData();
-            pd.setPrice(price);
+            pd.setBasePrice(price);
             pd.setShowcaseItem(display);
             pd.setOnPurchase(() -> {
                 pm.setPermission(ultraPlayer, cosmeticType);
@@ -143,7 +140,8 @@ public abstract class CosmeticButton implements Button {
             Component title = MessageManager.getMessage("Menu.Purchase-Cosmetic.Title",
                     Placeholder.component("cosmetic", cosmeticType.getName())
             );
-            MenuPurchase mp = new MenuPurchase(ultraCosmetics, title, pd);
+            MenuPurchaseFactory mpFactory = ultraCosmetics.getMenus().getMenuPurchaseFactory();
+            MenuPurchase mp = mpFactory.createPurchaseMenu(ultraCosmetics, title, pd);
             ultraPlayer.getBukkitPlayer().openInventory(mp.getInventory(ultraPlayer));
             return false; // We just opened another inventory, don't close it
         } else if (startsWithColorless(clicked.getItemMeta().getDisplayName(), cosmeticType.getCategory().getDeactivateTooltip())) {
@@ -160,7 +158,8 @@ public abstract class CosmeticButton implements Button {
             ItemMeta meta = stack.getItemMeta();
             List<String> lore = meta.getLore();
             lore.add("");
-            lore.add(clickToPurchaseLore);
+            int discountPrice = ultraCosmetics.getEconomyHandler().calculateDiscountPrice(player.getBukkitPlayer(), price);
+            lore.add(MessageManager.getLegacyMessage("Click-To-Purchase", Placeholder.unparsed("price", String.valueOf(discountPrice))));
             meta.setLore(lore);
             stack.setItemMeta(meta);
         }

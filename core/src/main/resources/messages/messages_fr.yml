@@ -1,5 +1,5 @@
 Prefix: <italic><bold>Cosmétiques >
-No-Permission: <prefix> <bold><red>Tu n'as pas la permission !
+No-Permission: <bold><red>Tu n'as pas la permission !
 Cosmetic-Disabled: <prefix> <bold><red>Ce cosmétique est désactivé !
 Invalid-Gadget: <prefix> <bold><red>Gadget invalide !
 Invalid-Pet: <prefix> <bold><red>Familier invalide !
@@ -16,7 +16,7 @@ Cancel: <bold><red>ANNULER
 Buy-Ammo-Description: <bold><yellow>Acheter <amount> recharges de <gadgetname> </yellow></bold><bold><yellow>pour <price>$
 Buy-Cosmetic-Description: <bold><yellow>Acheter <gadgetname> </yellow></bold><bold><yellow>pour <price>$
 Right-Click-Buy-Ammo: <gray>Clic droit pour acheter des munitions
-Click-To-Purchase: <yellow>Clique pour acheter pour <price>$
+Click-To-Purchase: <yellow>Clic pour acheter pour <price>$
 Not-Enough-Money: <prefix> <bold><red>Tu n'as pas assez d'argent !
 Successful-Purchase: <prefix> <bold><green>Achat réussi !
 Buy-Treasure-Key: <bold>Acheter une clé de coffre aux trésors
@@ -24,7 +24,7 @@ Treasure-Keys: <bold><gray>Clés de coffre aux trésors
 Treasure-Chests: <bold><gold>Coffres aux trésors
 Dont-Have-Key: <bold><dark_red>Tu as besoin d'une clé !
 Click-Open-Chest: <green>Clique pour ouvrir un coffre
-Click-Buy-Key: <green>Clique pour acheter une clé
+Click-Buy-Key: <green>Clic pour acheter une clé
 Left-Click-Open-Chest: <green>Clic gauche pour ouvrir un coffre
 Right-Click-Simple: <green>Clic droit pour juste obtenir des cosmétiques
 Your-Keys: '<italic><gray>Vos clés : </gray></italic><bold><white><keys>'
@@ -32,6 +32,7 @@ Buy-Treasure-Key-ItemName: <bold><yellow>1 </yellow></bold><bold><gray>Clé de C
 You-Won-Treasure-Chests: '<prefix> <bold><white>Tu as gagné : <name> !'
 Treasure-Chest-Occupied: <prefix> <bold><red>Pas d'endroits disponibles pour ouvrir un coffre, patiente un peu puis réessaye
 No-Ammo: <prefix> <bold><red>Vous n'avez pas de munitions pour ce gadget!
+Cannot-Sell-Item: <prefix> <bold><red>Vous ne pouvez pas vendre cet objet !
 Clear:
   Cosmetics: <bold><red>Retirer les cosmétiques
   Gadgets: <bold><red>Retirer le gadget actuel
@@ -53,7 +54,7 @@ Menu:
     Title: <bold>Achat <cosmetic>
   Rename-Pet:
     Button:
-      Name: '<bold><red>Clique pour renommer : <petname>'
+      Name: '<bold><red>Clic pour renommer : <petname>'
     Placeholder: Nom du familier
     Title: Renommer le familier
   Main:
@@ -136,6 +137,7 @@ Menu:
     Button:
       Previous-Page: <bold><red>Page précédente
       Next-Page: <bold><green>Page suivante
+  Disabled-Button: <red>DESACTIVER
 Chest-Location:
   Not-Enough-Space: <prefix> <bold><red>Il n'y a pas assez de place pour un coffre au trésor !
   Region-Disabled: <prefix> <bold><red>Tu ne peux pas ouvrir un coffre ici !
@@ -241,7 +243,7 @@ Gadgets:
       vers toi !
   DiscoBall:
     name: <bold><light_purple>Boule Disco
-    Already-Active: <bold><red>Il y a déjà une boule disco active !
+    Already-Active: <bold><red>Il y a déjà une boule disco activée !
     Not-Space-Above: <bold><red>Il n'y a pas assez de place au-dessus de toi !
     Description: Danse !
   ColorBomb:
@@ -467,9 +469,9 @@ Particle-Effects:
   BloodHelix:
     name: <bold><dark_red>Hélix de Sang
     Description: |-
-      <italic><gray>Une légende ancienne dit que cette magie 
-      <italic><gray>rend le sang de son utilisateur puissant, 
-      <italic><gray>lui donnant des pouvoirs divins...
+      Une légende ancienne dit que cette magie
+      rend le sang de son utilisateur puissant,
+      lui donnant des pouvoirs divins...
   FrostLord:
     name: <bold><aqua>Seigneur des Glaces
     Description: Je suis le tout-puissant Seigneur des Glaces !
@@ -921,7 +923,7 @@ Morphs:
     Description: Hey quoi de neuf ?
   Snowman:
     name: <bold><white>Bonhomme de neige
-    skill: '<yellow>Clic-Gauche </yellow><gray>pour: </gray><green>Lancer une boule de neige'
+    skill: '<yellow>Clic-Gauche </yellow><gray>pour : </gray><green> Lancer une boule de neige'
     Description: Devenez Olaf !
   Equip: <prefix> <blue>Vous vous êtes transformé en <morphname>
   Unequip: <prefix> <blue>Vous êtes revenu en <morphname>
@@ -941,7 +943,7 @@ Morphs:
     Description: Meuuuuh !
   Sheep:
     name: <bold><white>Mouton
-    skill: '<yellow>Clic-Gauche </yellow><gray>pour: </gray><green>Changer les couleurs'
+    skill: '<yellow>Clic-Gauche</yellow><gray>pour : </gray><green>Changer les couleurs'
     Description: Bêêêêêh
   Mooshroom:
     name: <bold><red>Champimeuh
@@ -1152,13 +1154,13 @@ Hats:
     Name: <bold><gray>Embarassé
     Description: Je suis un peu embarrassé par cela.
   Kissy:
-    Name: '&c&lKissy'
+    Name: <bold><red>Kissy
     Description: Vous voulez un bisou ?
   Sad:
     Name: <bold><blue>Triste
     Description: <gray>Je suis tellement triste.
   Cool:
-    Name: '&6&lCool'
+    Name: <bold><gold>Cool
     Description: Je suis un gars tellement cool.
   Surprised:
     Name: <bold><dark_red>Surprise
@@ -1176,7 +1178,7 @@ Hats:
     Name: <bold><yellow>Clin d'œil
     Description: Vous savez ce que je veux dire ;)
   Derp:
-    Name: '&3&lDerp'
+    Name: <bold><dark_aqua>Derp
     Description: Derp Derp Derp
   Smile:
     Name: <bold><yellow>Sourire
@@ -1464,7 +1466,7 @@ Hats:
     Name: <bold><gray>GigaChad
     Description: Adoptez la masculinité !
   Anubis:
-    Name: '&6&lAnubis'
+    Name: <bold><gold>Anubis
     Description: Dieu égyptien antique
   Bread:
     Name: <bold><white>Pain
@@ -1506,7 +1508,7 @@ Hats:
     Name: <bold><white>Noix de coco
     Description: Paradis
   Taco:
-    Name: '&e&lTaco'
+    Name: <bold><yellow>Taco
     Description: Allons-y pour des tacos !
   Bacon:
     Name: <bold><white>Bacon
@@ -1533,82 +1535,82 @@ Hats:
     Name: <bold><dark_red>Tarte
     Description: J'aime les tartes
   A:
-    Name: '&6&lA'
+    Name: <bold><gold>A
     Description: La première lettre de l'alphabet !
   B:
-    Name: '&4&lB'
+    Name: <bold><dark_red>B
     Description: La deuxième lettre de l'alphabet !
   C:
-    Name: '&2&lC'
+    Name: <bold><dark_green>C
     Description: La troisième lettre de l'alphabet !
   D:
-    Name: '&b&lD'
+    Name: <bold><aqua>D
     Description: La quatrième lettre de l'alphabet !
   E:
-    Name: '&e&lE'
+    Name: <bold><yellow>E
     Description: La cinquième lettre de l'alphabet !
   F:
-    Name: '&5&lF'
+    Name: <bold><dark_purple>F
     Description: La sixième lettre de l'alphabet !
   G:
-    Name: '&d&lG'
+    Name: <bold><light_purple>G
     Description: La septième lettre de l'alphabet !
   H:
-    Name: '&a&lH'
+    Name: <bold><green>H
     Description: La huitième lettre de l'alphabet !
   I:
-    Name: '&6&lI'
+    Name: <bold><gold>I
     Description: La neuvième lettre de l'alphabet !
   J:
-    Name: '&4&lJ'
+    Name: <bold><dark_red>J
     Description: La dixième lettre de l'alphabet !
   K:
-    Name: '&2&lK'
+    Name: <bold><dark_green>K
     Description: La onzième lettre de l'alphabet !
   L:
-    Name: '&b&lL'
+    Name: <bold><aqua>L
     Description: La douzième lettre de l'alphabet !
   M:
-    Name: '&e&lM'
+    Name: <bold><yellow>M
     Description: La treizième lettre de l'alphabet !
   N:
-    Name: '&5&lN'
+    Name: <bold><dark_purple>N
     Description: La quatorzième lettre de l'alphabet !
   O:
-    Name: '&d&lO'
+    Name: <bold><light_purple>O
     Description: La quinzième lettre de l'alphabet !
   P:
-    Name: '&a&lP'
+    Name: <bold><green>P
     Description: La seizième lettre de l'alphabet !
   Q:
-    Name: '&6&lQ'
+    Name: <bold><gold>Q
     Description: La dix-septième lettre de l'alphabet !
   R:
-    Name: '&4&lR'
+    Name: <bold><dark_red>R
     Description: La dix-huitième lettre de l'alphabet !
   S:
-    Name: '&2&lS'
+    Name: <bold><dark_green>S
     Description: La dix-neuvième lettre de l'alphabet !
   T:
-    Name: '&b&lT'
+    Name: <bold><aqua>T
     Description: La vingtième lettre de l'alphabet !
   U:
-    Name: '&e&lU'
+    Name: <bold><yellow>U
     Description: La vingt-première lettre de l'alphabet !
   V:
-    Name: '&5&lV'
+    Name: <bold><dark_purple>V
     Description: La vingt-deuxième lettre de l'alphabet !
   W:
-    Name: '&d&lW'
+    Name: <bold><light_purple>W
     Description: La vingt-troisième lettre de l'alphabet !
   X:
-    Name: '&a&lX'
+    Name: <bold><green>X
     Description: La vingt-quatrième lettre de l'alphabet !
   Y:
-    Name: '&6&lY'
+    Name: <bold><gold>Y
     Description: La vingt-cinquième lettre de l'alphabet !
   Z:
-    Name: '&4&lZ'
+    Name: <bold><dark_red>Z
     Description: La vingt-sixième lettre de l'alphabet !
 Suits:
   Rave:
@@ -1810,17 +1812,17 @@ Projectile-Effects:
     name: <bold><white>Wax désactivé
     Description: Étoiles blanches
   WaxOn:
-    name: <bold><white>Wax désactivé
+    name: <bold><gold>Wax activé
     Description: Étoiles Orange
   SculkSoul:
-    name: <aqua>&Âme de lSculk
+    name: <bold><aqua>Âme de lSculk
     Description: Âmes cyan
 Death-Effects:
   Equip: <prefix> <blue>Tu as équipé <death-effectname>
   Unequip: <prefix> <blue>Tu as déséquipé <death-effectname>
   Explosion:
     name: <bold><dark_red>Explosion
-    Description: '&7&oBOOM!'
+    Description: BOOM!
   Firework:
     name: <bold><gray>Fusée d'artifice
     Description: |-

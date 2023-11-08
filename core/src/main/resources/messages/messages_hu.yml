@@ -1,5 +1,5 @@
 Prefix: <italic><bold>Kozmetikumok >
-No-Permission: <prefix> <bold><red>Nincs engedélyed!
+No-Permission: <bold><red>Nincs engedélyed!
 Cosmetic-Disabled: <prefix> <bold><red>Ez a kozmetikum le van tiltva!
 Invalid-Gadget: <prefix> <bold><red>Érvénytelen Kütyü!
 Invalid-Pet: <prefix> <bold><red>Érvénytelen Kisállat!
@@ -32,6 +32,7 @@ Buy-Treasure-Key-ItemName: <bold><yellow>1 </yellow><gray>Treasure Key </gray><y
 You-Won-Treasure-Chests: '<prefix> <bold><white>You won: <name>!'
 Treasure-Chest-Occupied: <prefix> <bold><red>All treasure locations are full, please wait and try again
 No-Ammo: <prefix> <bold><red>You don't have any ammo for this gadget!
+Cannot-Sell-Item: <prefix> <bold><red>You cannot sell this item!
 Clear:
   Cosmetics: <bold><red>Clear cosmetics
   Gadgets: <bold><red>Clear current gadget
@@ -78,56 +79,56 @@ Menu:
     Title: <bold>Mounts
     Button:
       Name: <bold><gold>Mounts
-      Lore: '<gray>Unlocked: </gray><white><unlocked>'
-      Tooltip-Equip: <bold><aqua>Spawn
-      Tooltip-Unequip: <bold><red>Despawn
+      Lore: '<gray>Feloldva: </gray><white><unlocked>'
+      Tooltip-Equip: <bold><aqua>Leidézés
+      Tooltip-Unequip: <bold><red>Visszaidézés
   Morphs:
     Title: <bold>Morphs
     Button:
       Name: <bold><dark_green>Morphs
-      Lore: '<gray>Unlocked: </gray><white><unlocked>'
+      Lore: '<gray>Feloldva: </gray><white><unlocked>'
       Tooltip-Equip: <bold><aqua>Morph into
       Tooltip-Unequip: <bold><red>Unmorph from
   Hats:
     Title: <bold>Hats
     Button:
       Name: <bold><light_purple>Hats
-      Lore: '<gray>Unlocked: </gray><white><unlocked>'
+      Lore: '<gray>Feloldva: </gray><white><unlocked>'
       Tooltip-Equip: <bold><aqua>Equip
       Tooltip-Unequip: <bold><red>Unequip
   Particle-Effects:
     Title: <bold>Particle Effects
     Button:
       Name: <bold><aqua>Particle Effects
-      Lore: '<gray>Unlocked: </gray><white><unlocked>'
+      Lore: '<gray>Feloldva: </gray><white><unlocked>'
       Tooltip-Equip: <bold><aqua>Summon
       Tooltip-Unequip: <bold><red>Unsummon
   Suits:
     Title: <bold>Suits
     Button:
       Name: <bold><dark_aqua>Suits
-      Lore: '<gray>Unlocked: </gray><white><unlocked>'
+      Lore: '<gray>Feloldva: </gray><white><unlocked>'
       Tooltip-Equip: <bold><aqua>Equip
       Tooltip-Unequip: <bold><red>Unequip
   Emotes:
     Title: <bold>Emotes
     Button:
       Name: <bold><yellow>Emotes
-      Lore: '<gray>Unlocked: </gray><white><unlocked>'
+      Lore: '<gray>Feloldva: </gray><white><unlocked>'
       Tooltip-Equip: <bold><aqua>Equip
       Tooltip-Unequip: <bold><red>Unequip
   Projectile-Effects:
     Title: <bold>Projectile Effects
     Button:
       Name: <bold><dark_purple>Projectile Effects
-      Lore: '<gray>Unlocked: </gray><white><unlocked>'
+      Lore: '<gray>Feloldva: </gray><white><unlocked>'
       Tooltip-Equip: <bold><aqua>Equip
       Tooltip-Unequip: <bold><red>Unequip
   Death-Effects:
     Title: <bold>Death Effects
     Button:
       Name: <bold><red>Death Effects
-      Lore: '<gray>Unlocked: </gray><white><unlocked>'
+      Lore: '<gray>Feloldva: </gray><white><unlocked>'
       Tooltip-Equip: <bold><aqua>Equip
       Tooltip-Unequip: <bold><red>Unequip
   Buy-Ammo:
@@ -136,6 +137,7 @@ Menu:
     Button:
       Previous-Page: <bold><red>Előző oldal
       Next-Page: <bold><green>Következő oldal
+  Disabled-Button: <red>DISABLED
 Chest-Location:
   Not-Enough-Space: <prefix> <bold><red>There isn't enough space for a treasure chest!
   Region-Disabled: <prefix> <bold><red>You can't open a chest here!

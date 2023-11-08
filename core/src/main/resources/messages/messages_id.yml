@@ -1,5 +1,5 @@
 Prefix: <italic><bold>Kosmetik >
-No-Permission: <prefix> <bold><red>Anda tidak memiliki ijin!
+No-Permission: <bold><red>Anda tidak memiliki ijin!
 Cosmetic-Disabled: <prefix> <bold><red>Kosmetik ini telah dimatikan!
 Invalid-Gadget: <prefix> <bold><red>Peralatan tidak ditemukan!
 Invalid-Pet: <prefix> <bold><red>Peliharaan tidak ditemukan!
@@ -16,7 +16,7 @@ Cancel: <bold><red>BATAL
 Buy-Ammo-Description: <bold><yellow>Beli peluru <gadgetname> <amount> </yellow></bold><bold><yellow>seharga $<price>
 Buy-Cosmetic-Description: <bold><yellow>Beli <gadgetname> </yellow></bold><bold><yellow>seharga $<price>
 Right-Click-Buy-Ammo: <gray>Tekan kanan untuk membeli Peluru
-Click-To-Purchase: <yellow>Click to purchase for $<price>
+Click-To-Purchase: <yellow>Klik untuk membeli untuk <price>
 Not-Enough-Money: <prefix> <bold><red>Anda tidak memiliki cukup uang!
 Successful-Purchase: <prefix> <bold><green>Pembelian berhasil!
 Buy-Treasure-Key: <bold>Beli kunci kotak Kosmetik
@@ -32,6 +32,7 @@ Buy-Treasure-Key-ItemName: <bold><yellow>1 </yellow></bold><bold><gray>Kunci Kot
 You-Won-Treasure-Chests: '<prefix> <bold><white>Anda mendapatkan: <name>!'
 Treasure-Chest-Occupied: <prefix> <bold><red>Semua lokasi kotak kosmetik telah penuh, mohon tunggu dan coba kembali
 No-Ammo: <prefix> <bold><red>You don't have any ammo for this gadget!
+Cannot-Sell-Item: <prefix> <bold><red>You cannot sell this item!
 Clear:
   Cosmetics: <bold><red>Bersihkan kosmetik
   Gadgets: <bold><red>Bersihkan peralatan saat ini
@@ -50,7 +51,7 @@ Menu:
       Showcase: <bold><red>Ganti nama hewan peliharaan menjadi </red></bold><bold><white><name> </white></bold><bold><red>seharga </red></bold><bold><yellow>$<price>
     Title: <bold>Ganti nama hewan peliharaan
   Purchase-Cosmetic:
-    Title: <bold>Purchase <cosmetic>
+    Title: <bold>Beli <cosmetic>
   Rename-Pet:
     Button:
       Name: '<bold><red>Tekan untuk mengganti nama: <petname>'
@@ -64,78 +65,79 @@ Menu:
     Title: <bold>Hewan Peliharaan
     Button:
       Name: <bold><green>Hewan Peliharaan
-      Lore: '<gray>Unlocked: </gray><white><unlocked>'
+      Lore: '<gray>Terbuka: </gray><white><unlocked>'
       Tooltip-Equip: <bold><aqua>Munculkan
       Tooltip-Unequip: <bold><red>Hilangkan
   Gadgets:
     Title: <bold>Peralatan
     Button:
       Name: <bold><blue>Peralatan
-      Lore: '<gray>Unlocked: </gray><white><unlocked>'
+      Lore: '<gray>Terbuka: </gray><white><unlocked>'
       Tooltip-Equip: <bold><aqua>Aktif
       Tooltip-Unequip: <bold><red>Non-aktif
   Mounts:
     Title: <bold>Kendaraan
     Button:
       Name: <bold><gold>Kendaraan
-      Lore: '<gray>Unlocked: </gray><white><unlocked>'
+      Lore: '<gray>Terbuka: </gray><white><unlocked>'
       Tooltip-Equip: <bold><aqua>Munculkan
       Tooltip-Unequip: <bold><red>Hilangkan
   Morphs:
     Title: <bold>Transformasi
     Button:
       Name: <bold><dark_green>Transformasi
-      Lore: '<gray>Unlocked: </gray><white><unlocked>'
+      Lore: '<gray>Terbuka: </gray><white><unlocked>'
       Tooltip-Equip: <bold><aqua>Transformasi menjadi
       Tooltip-Unequip: <bold><red>Transformasi kembali dari
   Hats:
     Title: <bold>Topi
     Button:
       Name: <bold><light_purple>Topi
-      Lore: '<gray>Unlocked: </gray><white><unlocked>'
+      Lore: '<gray>Terbuka: </gray><white><unlocked>'
       Tooltip-Equip: <bold><aqua>Pakai
       Tooltip-Unequip: <bold><red>Lepas
   Particle-Effects:
     Title: <bold>Efek Partikel
     Button:
       Name: <bold><aqua>Efek Partikel
-      Lore: '<gray>Unlocked: </gray><white><unlocked>'
+      Lore: '<gray>Terbuka: </gray><white><unlocked>'
       Tooltip-Equip: <bold><aqua>Panggil
       Tooltip-Unequip: <bold><red>Batalkan
   Suits:
     Title: <bold>Baju Setelan
     Button:
       Name: <bold><dark_aqua>Baju Setelan
-      Lore: '<gray>Unlocked: </gray><white><unlocked>'
+      Lore: '<gray>Terbuka: </gray><white><unlocked>'
       Tooltip-Equip: <bold><aqua>Pakai
       Tooltip-Unequip: <bold><red>Lepas
   Emotes:
     Title: <bold>Emote
     Button:
       Name: <bold><yellow>Emote
-      Lore: '<gray>Unlocked: </gray><white><unlocked>'
+      Lore: '<gray>Terbuka: </gray><white><unlocked>'
       Tooltip-Equip: <bold><aqua>Pakai
       Tooltip-Unequip: <bold><red>Lepas
   Projectile-Effects:
     Title: <bold>Projectile Effects
     Button:
       Name: <bold><dark_purple>Projectile Effects
-      Lore: '<gray>Unlocked: </gray><white><unlocked>'
-      Tooltip-Equip: <bold><aqua>Equip
-      Tooltip-Unequip: <bold><red>Unequip
+      Lore: '<gray>Terbuka: </gray><white><unlocked>'
+      Tooltip-Equip: <bold><aqua>Pakai
+      Tooltip-Unequip: <bold><red>Lepas
   Death-Effects:
-    Title: <bold>Death Effects
+    Title: <bold>Efek Kematian
     Button:
-      Name: <bold><red>Death Effects
-      Lore: '<gray>Unlocked: </gray><white><unlocked>'
-      Tooltip-Equip: <bold><aqua>Equip
-      Tooltip-Unequip: <bold><red>Unequip
+      Name: <bold><red>Efek Kematian
+      Lore: '<gray>Terbuka: </gray><white><unlocked>'
+      Tooltip-Equip: <bold><aqua>Pakai
+      Tooltip-Unequip: <bold><red>Lepas
   Buy-Ammo:
     Title: <bold>Beli Peluru
   Misc:
     Button:
       Previous-Page: <bold><red>Halaman Sebelumnya
       Next-Page: <bold><green>Halaman Selanjutnya
+  Disabled-Button: <red>DISABLED
 Chest-Location:
   Not-Enough-Space: <prefix> <bold><red>Tidak ada cukup ruang untuk membuka kotak kosmetik!
   Region-Disabled: <prefix> <bold><red>Anda tidak dapat membuka kotak kosmetik disini!
@@ -143,60 +145,60 @@ Chest-Location:
   In-Air: <prefix> <bold><red>Lokasi tersebut tidak berada di tanah!
   In-Ground: <prefix> <bold><red>Lokasi tersebut ada di dalam tanah!
   Suggestion: <prefix> <green>Mungkin maksud anda <location>?
-  Dismount-First: <prefix> <bold><red>You must dismount your vehicle before opening a chest.
-  Too-Close-To-Entity: <prefix> <bold><red>You are too close to another entity!
+  Dismount-First: <prefix> <bold> <red>Kamu harus keluar dari kendaraanmu sebelum membuka peti.
+  Too-Close-To-Entity: <prefix> <bold> <red>Kamu terlalu dekat dengan entitas lain!
 Active-Pet-Needed: <bold><red>Anda harus memanggil hewan peliharaan untuk mengganti nama
 Treasure-Chests-Loot:
   Ammo: |-
-    <blue>Ammo
+    <blue> Amunisi
     <ammo> <cosmetic>
   Money: |-
-    <yellow>Money
-    <bold><yellow>$<money>
+    <yellow>Uang
+    <bold> <yellow>$<money>
   Nothing: <bold><red>Tidak ada apa-apa
   Pets: |-
-    <green>Pet
+    <green>Peliharaan
     <cosmetic>
   Mounts: |-
-    <gold>Mount
+    <gold>Tunggangan
     <cosmetic>
   Particle-Effects: |-
-    <aqua>Particle Effect
+    <aqua>Efek Partikel
     <cosmetic>
   Morphs: |-
     <dark_green>Morph
     <cosmetic>
   Hats: |-
-    <light_purple>Hat
+    <light_purple>Topi
     <cosmetic>
   Gadgets: |-
     <blue>Gadget
     <cosmetic>
   Suits: |-
-    <dark_aqua>Suit
+    <dark_aqua>Setelan
     <cosmetic>
   Emotes: |-
-    <yellow>Emote
+    <yellow>Emosi
     <cosmetic>
   Death-Effects: |-
-    <red>Death Effect
+    <red>Efek Kematian
     <cosmetic>
   Projectile-Effects: |-
-    <dark_purple>Projectile Effect
+    <dark_purple>Efek Proyektil
     <cosmetic>
 Treasure-Chests-Loot-Messages:
-  Ammo: <prefix> <bold><gold><name> found <ammo> <cosmetic> ammo
+  Ammo: <prefix> <bold> <gold> <name> telah menemukan <ammo> <cosmetic> amunisi
   Money: <prefix> <bold><gold><name> found $<money>
-  Pets: <prefix> <bold><gold><name> found rare <cosmetic>
-  Mounts: <prefix> <bold><gold><name> found rare <cosmetic>
+  Pets: <prefix> <bold> <gold> <name> telah menemukan <cosmetic> yang langka
+  Mounts: <prefix> <bold> <gold> <name> telah menemukan <cosmetic> yang langka
   Particle-Effects: <prefix> <bold><gold><name> found legendary <cosmetic>
   Morphs: <prefix> <bold><gold><name> found legendary <cosmetic>
-  Hats: <prefix> <bold><gold><name> found rare <cosmetic>
+  Hats: <prefix> <bold> <gold> <name> telah menemukan <cosmetic> yang langka
   Gadgets: <prefix> <bold><gold><name> found gadget <cosmetic>
-  Suits: <prefix> <bold><gold><name> found rare <cosmetic>
-  Emotes: <prefix> <bold><gold><name> found rare <cosmetic>
-  Death-Effects: <prefix> <bold><gold><name> found rare <cosmetic>
-  Projectile-Effects: <prefix> <bold><gold><name> found rare <cosmetic>
+  Suits: <prefix> <bold> <gold> <name> telah menemukan <cosmetic> yang langka
+  Emotes: <prefix> <bold> <gold> <name> telah menemukan <cosmetic> yang langka
+  Death-Effects: <prefix> <bold> <gold> <name> telah menemukan <cosmetic> yang langka
+  Projectile-Effects: <prefix> <bold> <gold> <name> telah menemukan <cosmetic> yang langka
 Permission-Lore:
   Showroom: '<gray>Permission: </gray><gold>Usable in showroom'
   Permission-No: '<gray>Permission: </gray><bold><dark_red>No!'
@@ -218,7 +220,7 @@ Gadgets:
   Countdown-Message: <prefix> <bold><red>Anda tidak dapat menggunakan <gadgetname> </red></bold><bold><red>selama <time>s!
   PaintballGun:
     name: <bold><aqua>Senjata Paintball
-    Description: '&7&oPEW PEW PEW PEW!!!'
+    Description: PEW PEW PEW PEW!!!
   BatBlaster:
     name: <bold><gray>Tembakan Kelelawar
     Description: |-
@@ -262,7 +264,7 @@ Gadgets:
     name: <bold><white>Palu Thor
     Description: Dapatkan Mjölnir sebenarnya!
   SmashDown:
-    name: '&c&lSmashDown'
+    name: <bold><red>SmashDown
     Description: DAN NAMANYA ADALAH...JOHN CENA!
   ExplosiveSheep:
     name: <bold><dark_red>Domba Meledak
@@ -276,7 +278,7 @@ Gadgets:
       Anda tidak suka gravitasi
       Maka, peralatan ini dibuat untuk anda!
   Tsunami:
-    name: '&9&lTsunami'
+    name: <bold><blue>Tsunami
     Description: |-
       TSUNAMI!
       Lari untuk hidup anda!
@@ -291,7 +293,7 @@ Gadgets:
     name: <bold><dark_blue>Lubang Hitam
     Description: Anda tidak boleh sampai terkena oleh itu!
   TNT:
-    name: '&4&lT&f&lN&4&lT'
+    name: <bold><dark_red>T</dark_red></bold><bold><white>N</white></bold><bold><dark_red>T
     Description: |-
       Ledakkan beberapa orang!
       KABOOM!
@@ -300,7 +302,7 @@ Gadgets:
     Description: Woow! Banyak kemeriahan dalam sebuah senjata!
   Parachute:
     name: <bold><white>Parasut
-    Description: '&7&oGERONIMOOO!'
+    Description: GERONIMOOO!
   QuakeGun:
     name: <bold><light_purple>Tembakan </light_purple></bold><bold><dark_purple>Gempa
     Description: |-
@@ -376,8 +378,8 @@ Mounts:
     menu-name: <bold><green>Do</green></bold><bold><aqua>m</aqua></bold><bold><light_purple>ba </light_purple></bold><bold><dark_red>Ny</dark_red></bold><bold><gold>a</gold></bold><bold><yellow>n
     entity-displayname: <bold><playername>'s Nyan Sheep
     Description: |-
-      &4&lNyan &6&lnyan &e&lnyan
-      &a&lnyan &3&lnyan &9&lnyan
+      <bold><dark_red>Nyan </dark_red></bold><bold><gold>nyan </gold></bold><bold><yellow>nyan
+      <bold><green>nyan </green></bold><bold><dark_aqua>nyan </dark_aqua></bold><bold><blue>nyan
   Snake:
     menu-name: <bold><gold>Ular
     entity-displayname: <bold><playername>'s Snake
@@ -387,21 +389,21 @@ Mounts:
     entity-displayname: <bold><playername>'s Dragon
     Description: Menjadi pengendara naga!
   HypeCart:
-    menu-name: '&7&lHypeCart'
+    menu-name: <bold><gray>HypeCart
     entity-displayname: <bold><playername>'s HypeCart
     Description: |-
       Ingin mengendarai sebuah F1?
       Sekarang anda bisa!
   Slime:
-    menu-name: '&a&lSlime'
+    menu-name: <bold><green>Slime
     entity-displayname: <bold><playername>'s Slime
-    Description: '&7&oSplat! Splat!'
+    Description: Splat! Splat!
   Spider:
     menu-name: <bold><dark_gray>Laba Laba
     entity-displayname: <bold><playername>'s Spider
     Description: ANDA adalah pengendara laba laba!
   Rudolph:
-    menu-name: '&f&lRudolp&4&lh'
+    menu-name: <bold><white>Rudolp</white></bold><bold><dark_red>h
     entity-displayname: <bold><playername>'s Rudolph
     Description: |-
       What would Christmas be
@@ -786,7 +788,7 @@ Pets:
     entity-displayname: <bold><playername>'s Dolphin
     Description: The happiest creature of the seas!
   Spider:
-    menu-name: <bold><dark_gray>Spider
+    menu-name: <bold><dark_gray>Laba Laba
     entity-displayname: <bold><playername>'s Spider
     Description: Your friendly neighborhood spider!
   ZombifiedPiglin:
@@ -1051,7 +1053,7 @@ Morphs:
     name: <bold><light_purple>Squid
     Description: Bloop Bloop!
   Spider:
-    name: <bold><dark_gray>Spider
+    name: <bold><dark_gray>Laba Laba
     Description: HISS...
   Ghast:
     name: <bold><white>Ghast

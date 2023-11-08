@@ -15,40 +15,49 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.permissions.Permission;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class OpenCosmeticMenuButton implements Button {
-    private final Category category;
-    private final PermissionManager pm;
-    private final Menus menus;
-    private final ItemStack baseStack;
+    protected final Category category;
+    protected final PermissionManager pm;
+    protected final Menus menus;
+    protected final ItemStack baseStack;
+    protected final Permission openPermission;
 
     public OpenCosmeticMenuButton(UltraCosmetics ultraCosmetics, Category category) {
         this.category = category;
         this.baseStack = category.getItemStack();
         this.pm = ultraCosmetics.getPermissionManager();
         this.menus = ultraCosmetics.getMenus();
+        this.openPermission = menus.getCategoryMenu(category).getPermission();
     }
 
     @Override
     public ItemStack getDisplayItem(UltraPlayer ultraPlayer) {
         ItemStack stack = baseStack.clone();
-        String lore = MessageManager.getLegacyMessage("Menu." + category.getConfigPath() + ".Button.Lore",
-                TagResolver.resolver("unlocked", new LazyTag(() -> Component.text(calculateUnlocked(ultraPlayer.getBukkitPlayer()))))
-        );
         List<String> loreList = new ArrayList<>();
         loreList.add("");
-        loreList.addAll(Arrays.asList(lore.split("\n")));
+        if (!category.isEnabled()) {
+            loreList.add(MessageManager.getLegacyMessage("Menu.Disabled-Button"));
+        } else if (!ultraPlayer.getBukkitPlayer().hasPermission(openPermission)) {
+            loreList.add(MessageManager.getLegacyMessage("No-Permission"));
+        } else {
+            String lore = MessageManager.getLegacyMessage("Menu." + category.getConfigPath() + ".Button.Lore",
+                    TagResolver.resolver("unlocked", new LazyTag(() -> Component.text(calculateUnlocked(ultraPlayer.getBukkitPlayer()))))
+            );
+            loreList.addAll(Arrays.asList(lore.split("\n")));
+        }
         ItemMeta meta = stack.getItemMeta();
         meta.setLore(loreList);
         stack.setItemMeta(meta);
         return stack;
     }
 
-    private String calculateUnlocked(Player player) {
+    protected String calculateUnlocked(Player player) {
         int unlocked = 0;
         int total;
         if (category.isSuits()) {
@@ -66,6 +75,8 @@ public class OpenCosmeticMenuButton implements Button {
 
     @Override
     public void onClick(ClickData clickData) {
-        menus.getCategoryMenu(category).open(clickData.getClicker());
+        if (category.isEnabled() && clickData.getClicker().getBukkitPlayer().hasPermission(openPermission)) {
+            menus.getCategoryMenu(category).open(clickData.getClicker());
+        }
     }
 }

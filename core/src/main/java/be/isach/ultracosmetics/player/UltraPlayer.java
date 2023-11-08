@@ -18,9 +18,6 @@ import be.isach.ultracosmetics.cosmetics.suits.Suit;
 import be.isach.ultracosmetics.cosmetics.type.CosmeticType;
 import be.isach.ultracosmetics.cosmetics.type.GadgetType;
 import be.isach.ultracosmetics.cosmetics.type.PetType;
-import be.isach.ultracosmetics.events.UCKeyPurchaseEvent;
-import be.isach.ultracosmetics.menu.PurchaseData;
-import be.isach.ultracosmetics.menu.menus.MenuPurchase;
 import be.isach.ultracosmetics.mysql.SqlCache;
 import be.isach.ultracosmetics.player.profile.CosmeticsProfile;
 import be.isach.ultracosmetics.player.profile.FileCosmeticsProfile;
@@ -28,12 +25,9 @@ import be.isach.ultracosmetics.run.FallDamageManager;
 import be.isach.ultracosmetics.treasurechests.TreasureChest;
 import be.isach.ultracosmetics.util.ItemFactory;
 import be.isach.ultracosmetics.util.PlayerUtils;
-import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.messages.ActionBar;
 import net.kyori.adventure.platform.bukkit.BukkitComponentSerializer;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
@@ -158,16 +152,32 @@ public class UltraPlayer {
     }
 
     /**
-     * Sets the cooldown of a gadget.
+     * Sets the cooldown of a cosmetic.
      *
-     * @param type     The gadget.
+     * @param type     The cosmetic.
      * @param cooldown The standard cooldown of the cosmetic in seconds
      * @param runTime  The runtime of the cosmetic (i.e. minimum possible cooldown) in seconds.
      */
-    public void setCoolDown(CosmeticType<?> type, double cooldown, double runTime) {
+    public void setCooldown(CosmeticType<?> type, double cooldown, double runTime) {
         double time = isBypassingCooldown() ? runTime : cooldown;
         if (time == 0) return;
         cooldowns.put(type, (long) (time * 1000 + System.currentTimeMillis()));
+    }
+
+    /**
+     * Checks whether a cosmetic is on cooldown, and if not, sets the cooldown.
+     *
+     * @param type     The cosmetic
+     * @param cooldown The standard cooldown of the cosmetic in seconds
+     * @param runTime  The runtime of the cosmetic (i.e. minimum possible cooldown) in seconds.
+     * @return true if the cosmetic can be used (making this a drop-in replacement for canUse)
+     */
+    public boolean getAndSetCooldown(CosmeticType<?> type, double cooldown, double runTime) {
+        if (canUse(type)) {
+            setCooldown(type, cooldown, runTime);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -369,41 +379,6 @@ public class UltraPlayer {
         saveCosmeticsProfile();
         clear();
         removeMenuItem();
-    }
-
-    /**
-     * Opens the Key Purchase Menu.
-     */
-    public void openKeyPurchaseMenu() {
-        if (!ultraCosmetics.getEconomyHandler().isUsingEconomy()) return;
-
-        int price = SettingsManager.getConfig().getInt("TreasureChests.Key-Price");
-        if (price < 1) return;
-
-        if (!getBukkitPlayer().hasPermission("ultracosmetics.treasurechests.buykey")) {
-            getBukkitPlayer().sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You don't have permission to buy Treasure Keys.");
-            return;
-        }
-        TagResolver.Single pricePlaceholder = Placeholder.unparsed("price", String.valueOf(price));
-        ItemStack itemStack = ItemFactory.create(XMaterial.TRIPWIRE_HOOK, MessageManager.getLegacyMessage("Buy-Treasure-Key-ItemName", pricePlaceholder));
-
-        PurchaseData pd = new PurchaseData();
-        pd.setPrice(price);
-        pd.setShowcaseItem(itemStack);
-        pd.setCanPurchase(() -> {
-            UCKeyPurchaseEvent event = new UCKeyPurchaseEvent(this, price);
-            Bukkit.getPluginManager().callEvent(event);
-            if (event.isCancelled()) return false;
-            pd.setPrice(event.getPrice());
-            return true;
-        });
-        pd.setOnPurchase(() -> {
-            addKey();
-            ultraCosmetics.getMenus().openMainMenu(this);
-        });
-        pd.setOnCancel(() -> ultraCosmetics.getMenus().openMainMenu(this));
-        MenuPurchase mp = new MenuPurchase(ultraCosmetics, MessageManager.getMessage("Buy-Treasure-Key"), pd);
-        Bukkit.getScheduler().runTaskLater(ultraCosmetics, () -> getBukkitPlayer().openInventory(mp.getInventory(this)), 1);
     }
 
     /**
