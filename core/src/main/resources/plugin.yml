@@ -17,6 +17,10 @@ softdepend:
   - Towny
   - PEconomy
   - PlayerAuctions
+  - Novaconomy
+load after:
+  - name: Novaconomy
+  - name: Vault
 commands:
   ultracosmetics:
     aliases: [ uc, cosmetics ]
