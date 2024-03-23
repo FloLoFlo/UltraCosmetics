@@ -9,8 +9,8 @@ import be.isach.ultracosmetics.cosmetics.Category;
 import be.isach.ultracosmetics.cosmetics.Cosmetic;
 import be.isach.ultracosmetics.cosmetics.PlayerAffectingCosmetic;
 import be.isach.ultracosmetics.player.UltraPlayer;
-import be.isach.ultracosmetics.util.ServerVersion;
 import be.isach.ultracosmetics.util.SmartLogger.LogLevel;
+import be.isach.ultracosmetics.version.ServerVersion;
 import com.cryptomorin.xseries.XMaterial;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -104,6 +104,11 @@ public abstract class CosmeticType<T extends Cosmetic<?>> {
         EmoteType.register();
         ProjectileEffectType.register(version);
         DeathEffectType.register();
+
+        // Permissions registered by cosmetics are not fully calculated until here,
+        // reducing loading time.
+        ALL_PERMISSION.recalculatePermissibles();
+
         if (GENERATE_MISSING_MESSAGES) {
             MessageManager.save();
         }
@@ -257,7 +262,7 @@ public abstract class CosmeticType<T extends Cosmetic<?>> {
         permission = registeredPermissions.computeIfAbsent(category.getPermission() + "." + getPermissionSuffix(), s -> {
             Permission perm = new Permission(s);
             try {
-                perm.addParent(ALL_PERMISSION, true);
+                ALL_PERMISSION.getChildren().put(s, true);
                 Bukkit.getPluginManager().addPermission(perm);
             } catch (IllegalArgumentException ignored) {
             }

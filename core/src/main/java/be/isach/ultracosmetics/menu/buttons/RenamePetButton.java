@@ -54,24 +54,32 @@ public class RenamePetButton implements Button {
     }
 
     public static void renamePet(UltraCosmetics ultraCosmetics, final UltraPlayer ultraPlayer, Menu returnMenu) {
-        new AnvilGUI.Builder().plugin(ultraCosmetics)
-                .itemLeft(XMaterial.PAPER.parseItem())
-                .text(MessageManager.getLegacyMessage("Menu.Rename-Pet.Placeholder"))
-                .title(MessageManager.getLegacyMessage("Menu.Rename-Pet.Title"))
-                .onClick((slot, state) -> {
-                    if (slot != AnvilGUI.Slot.OUTPUT) return Collections.emptyList();
-                    String text = state.getText();
-                    if (text.length() > MySqlConnectionManager.MAX_NAME_SIZE) {
-                        return Collections.singletonList(AnvilGUI.ResponseAction.replaceInputText(MessageManager.getLegacyMessage("Too-Long")));
-                    }
-                    if (!text.isEmpty() && ultraCosmetics.getEconomyHandler().isUsingEconomy()
-                            && SettingsManager.getConfig().getBoolean("Pets-Rename.Requires-Money.Enabled")) {
-                        return Collections.singletonList(AnvilGUI.ResponseAction.openInventory(buyRenamePet(ultraPlayer, text, returnMenu)));
-                    } else {
-                        ultraPlayer.setPetName(ultraPlayer.getCurrentPet().getType(), text);
-                        return Collections.singletonList(AnvilGUI.ResponseAction.close());
-                    }
-                }).open(ultraPlayer.getBukkitPlayer());
+        String oldName = ultraPlayer.getProfile().getPetName(ultraPlayer.getCurrentPet().getType());
+        if (oldName == null) {
+            oldName = MessageManager.getLegacyMessage("Menu.Rename-Pet.Placeholder");
+        }
+        try {
+            new AnvilGUI.Builder().plugin(ultraCosmetics)
+                    .itemLeft(XMaterial.PAPER.parseItem())
+                    .text(oldName)
+                    .title(MessageManager.getLegacyMessage("Menu.Rename-Pet.Title"))
+                    .onClick((slot, state) -> {
+                        if (slot != AnvilGUI.Slot.OUTPUT) return Collections.emptyList();
+                        String text = state.getText();
+                        if (text.length() > MySqlConnectionManager.MAX_NAME_SIZE) {
+                            return Collections.singletonList(AnvilGUI.ResponseAction.replaceInputText(MessageManager.getLegacyMessage("Too-Long")));
+                        }
+                        if (!text.isEmpty() && ultraCosmetics.getEconomyHandler().isUsingEconomy()
+                                && SettingsManager.getConfig().getBoolean("Pets-Rename.Requires-Money.Enabled")) {
+                            return Collections.singletonList(AnvilGUI.ResponseAction.openInventory(buyRenamePet(ultraPlayer, text, returnMenu)));
+                        } else {
+                            ultraPlayer.setPetName(ultraPlayer.getCurrentPet().getType(), text);
+                            return Collections.singletonList(AnvilGUI.ResponseAction.close());
+                        }
+                    }).open(ultraPlayer.getBukkitPlayer());
+        } catch (ExceptionInInitializerError e) {
+            ultraPlayer.sendMessage(MessageManager.getMessage("Use-Rename-Pet-Command"));
+        }
     }
 
     public static Inventory buyRenamePet(UltraPlayer ultraPlayer, final String name, Menu returnMenu) {

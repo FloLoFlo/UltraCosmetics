@@ -1,5 +1,6 @@
 package be.isach.ultracosmetics.cosmetics;
 
+import be.isach.ultracosmetics.UltraCosmeticsData;
 import be.isach.ultracosmetics.config.SettingsManager;
 import be.isach.ultracosmetics.cosmetics.type.CosmeticType;
 import be.isach.ultracosmetics.player.UltraPlayer;
@@ -19,12 +20,14 @@ public interface PlayerAffectingCosmetic {
             if (Bukkit.getPlayer(target.getUniqueId()) == null) return false;
             if (isHidden(target, owner)) return false;
             UltraPlayer ultraPlayer = getSelf().getUltraCosmetics().getPlayerManager().getUltraPlayer(target);
-            if (!ultraPlayer.hasGadgetsEnabled() || ultraPlayer.getCurrentTreasureChest() != null) {
+            if (!ultraPlayer.canBeHitByOtherGadgets() || !ultraPlayer.hasGadgetsEnabled() || ultraPlayer.getCurrentTreasureChest() != null) {
                 return false;
             }
             if (!getSelf().getUltraCosmetics().getWorldGuardManager().canAffectPlayersHere(target)) {
                 return false;
             }
+        } else if (entity instanceof Creature && !UltraCosmeticsData.get().isCosmeticsAffectEntities()) {
+            return false;
             // if the entity is neither a player nor a creature, just skip it
         } else if (!(entity instanceof Creature)) {
             return false;

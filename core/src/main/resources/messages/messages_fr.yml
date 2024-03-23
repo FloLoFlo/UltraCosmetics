@@ -23,7 +23,7 @@ Buy-Treasure-Key: <bold>Acheter une clé de coffre aux trésors
 Treasure-Keys: <bold><gray>Clés de coffre aux trésors
 Treasure-Chests: <bold><gold>Coffres aux trésors
 Dont-Have-Key: <bold><dark_red>Tu as besoin d'une clé !
-Click-Open-Chest: <green>Clique pour ouvrir un coffre
+Click-Open-Chest: <green>Clic pour ouvrir un coffre
 Click-Buy-Key: <green>Clic pour acheter une clé
 Left-Click-Open-Chest: <green>Clic gauche pour ouvrir un coffre
 Right-Click-Simple: <green>Clic droit pour juste obtenir des cosmétiques
@@ -33,6 +33,7 @@ You-Won-Treasure-Chests: '<prefix> <bold><white>Tu as gagné : <name> !'
 Treasure-Chest-Occupied: <prefix> <bold><red>Pas d'endroits disponibles pour ouvrir un coffre, patiente un peu puis réessaye
 No-Ammo: <prefix> <bold><red>Vous n'avez pas de munitions pour ce gadget!
 Cannot-Sell-Item: <prefix> <bold><red>Vous ne pouvez pas vendre cet objet !
+Structure-Chests-Disabled: <prefix> <bold><red>Les coffres de structure sont désactivés !
 Clear:
   Cosmetics: <bold><red>Retirer les cosmétiques
   Gadgets: <bold><red>Retirer le gadget actuel
@@ -247,10 +248,10 @@ Gadgets:
     Not-Space-Above: <bold><red>Il n'y a pas assez de place au-dessus de toi !
     Description: Danse !
   ColorBomb:
-    name: <bold><light_purple>Bombe de Couleur
+    name: <bold><light_purple>Bombe de couleur
     Description: Une bombe colorée !
   Chickenator:
-    name: <bold><white>Lanceur de Poulets
+    name: <bold><white>Lanceur de poulets
     Description: 1. Tire ! 2. Boom ! 3. KFC !
   PortalGun:
     name: <bold><red>Pistolet </red></bold><bold><blue>Portail
@@ -1138,6 +1139,9 @@ Morphs:
   Shulker:
     name: <bold><dark_purple>Shulker
     Description: Aime se cacher !
+  Sniffer:
+    name: <bold><green>Renifleur
+    Description: '*renifle renifle*'
 Hats:
   Equip: <prefix> <blue>Tu as équipé <hatname> !
   Unequip: <prefix> <blue>Tu as déséquipé <hatname> !
@@ -1853,3 +1857,4 @@ Must-Remove:
   Emotes: <prefix> <bold><red>Vous devez retirer votre casque pour équiper une emote !
   Gadgets: <prefix> <bold><red>Vous devez effacer l'emplacement de la barre d'action <slot> pour équiper un gadget !
   Mounts: <prefix> <bold><red>Vous devez effacer l'emplacement de la barre d'action <slot> pour équiper cette monture !
+Use-Rename-Pet-Command: <prefix> <red>Utiliser <yellow>/uc rename</yellow> pour renommer

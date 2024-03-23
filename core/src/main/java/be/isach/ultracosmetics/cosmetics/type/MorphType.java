@@ -6,7 +6,7 @@ import be.isach.ultracosmetics.config.MessageManager;
 import be.isach.ultracosmetics.config.SettingsManager;
 import be.isach.ultracosmetics.cosmetics.Category;
 import be.isach.ultracosmetics.cosmetics.morphs.*;
-import be.isach.ultracosmetics.util.ServerVersion;
+import be.isach.ultracosmetics.version.ServerVersion;
 import be.isach.ultracosmetics.version.VersionManager;
 import com.cryptomorin.xseries.XMaterial;
 import net.kyori.adventure.text.Component;
@@ -127,6 +127,7 @@ public class MorphType extends CosmeticType<Morph> {
         switch (version) {
             case NEW:
             case v1_20:
+                new MorphType("Sniffer", XMaterial.SNIFFER_EGG, EntityType.SNIFFER, MorphSniffer.class);
             case v1_19:
                 new MorphType("Allay", XMaterial.ALLAY_SPAWN_EGG, EntityType.ALLAY, MorphAllay.class);
                 new MorphType("Frog", XMaterial.FROG_SPAWN_EGG, EntityType.FROG, MorphFrog.class, false);

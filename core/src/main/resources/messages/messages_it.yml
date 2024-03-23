@@ -4,16 +4,16 @@ Cosmetic-Disabled: <prefix> <bold><red>Questo cosmetico è disabilitato!
 Invalid-Gadget: <prefix> <bold><red>Gadget non valido!
 Invalid-Pet: <prefix> <bold><red>Pet non valido!
 Invalid-Mount: <prefix> <bold><red>Invalid Mount!
-Invalid-Effect: <prefix> <bold><red>Invalid Effect!
+Invalid-Effect: <prefix> <bold><red>Pet non valido!
 Invalid-Morph: <prefix> <bold><red>Invalid Morph!
 Invalid-Hat: <prefix> <bold><red>Cappello non valido!
-Invalid-Suit: <prefix> <bold><red>Invalid Suit!
+Invalid-Suit: <prefix> <bold><red>Abito Non Valido!
 Invalid-Emote: <prefix> <bold><red>Emote non valida!
-Invalid-Menu: <prefix> <bold><red>Invalid Menu!
+Invalid-Menu: <prefix> <bold><red>Menu Non Valido!
 Ammo: '<gray>Your ammo: </gray><yellow><ammo>'
 Purchase: <bold><green>ACQUISTA
-Cancel: <bold><red>CANCEL
-Buy-Ammo-Description: <bold><yellow>Buy <amount> <gadgetname> ammo for $<price>
+Cancel: <bold><red>ANNULLA
+Buy-Ammo-Description: <bold><yellow>Acquista munizioni <amount> <gadgetname> per $<price>
 Buy-Cosmetic-Description: <bold><yellow>Buy <gadgetname> for $<price>
 Right-Click-Buy-Ammo: <gray>Right Click to Buy Ammo
 Click-To-Purchase: <yellow>Click to purchase for $<price>
@@ -33,6 +33,7 @@ You-Won-Treasure-Chests: '<prefix> <bold><white>Hai vinto: <name>!'
 Treasure-Chest-Occupied: <prefix> <bold><red>Tutti i luoghi del tesoro sono pieni, si prega di attendere e riprovare
 No-Ammo: <prefix> <bold><red>Non hai nessuna munizioni per questo gadget!
 Cannot-Sell-Item: <prefix> <bold><red>You cannot sell this item!
+Structure-Chests-Disabled: <prefix> <bold><red>Structure chests are disabled!
 Clear:
   Cosmetics: <bold><red>Rimuovi Cosmetici
   Gadgets: <bold><red>Rimuovi il gadget corrente
@@ -62,26 +63,26 @@ Menu:
     Button:
       Name: <bold><red>Main Menu
   Pets:
-    Title: <bold>Pets
+    Title: <bold>Animali domestici
     Button:
       Name: <bold><green>Pets
       Lore: '<gray>Unlocked: </gray><white><unlocked>'
-      Tooltip-Equip: <bold><aqua>Spawn
-      Tooltip-Unequip: <bold><red>Despawn
+      Tooltip-Equip: <bold><aqua>Produrre
+      Tooltip-Unequip: <bold><red>Scomparsa
   Gadgets:
-    Title: <bold>Gadgets
+    Title: <bold>Gadget
     Button:
       Name: <bold><blue>Gadgets
       Lore: '<gray>Unlocked: </gray><white><unlocked>'
       Tooltip-Equip: <bold><aqua>Activate
       Tooltip-Unequip: <bold><red>Deactivate
   Mounts:
-    Title: <bold>Mounts
+    Title: <bold>Monti
     Button:
-      Name: <bold><gold>Mounts
+      Name: <bold><gold>Monti
       Lore: '<gray>Unlocked: </gray><white><unlocked>'
-      Tooltip-Equip: <bold><aqua>Spawn
-      Tooltip-Unequip: <bold><red>Despawn
+      Tooltip-Equip: <bold><aqua>Produrre
+      Tooltip-Unequip: <bold><red>Scomparsa
   Morphs:
     Title: <bold>Morphs
     Button:
@@ -90,11 +91,11 @@ Menu:
       Tooltip-Equip: <bold><aqua>Morph into
       Tooltip-Unequip: <bold><red>Unmorph from
   Hats:
-    Title: <bold>Hats
+    Title: <bold>Cappelli
     Button:
       Name: <bold><light_purple>Hats
       Lore: '<gray>Unlocked: </gray><white><unlocked>'
-      Tooltip-Equip: <bold><aqua>Equip
+      Tooltip-Equip: <bold><aqua>Equipaggiare
       Tooltip-Unequip: <bold><red>Unequip
   Particle-Effects:
     Title: <bold>Particle Effects
@@ -108,28 +109,28 @@ Menu:
     Button:
       Name: <bold><dark_aqua>Suits
       Lore: '<gray>Unlocked: </gray><white><unlocked>'
-      Tooltip-Equip: <bold><aqua>Equip
+      Tooltip-Equip: <bold><aqua>Equipaggiare
       Tooltip-Unequip: <bold><red>Unequip
   Emotes:
     Title: <bold>Emotes
     Button:
       Name: <bold><yellow>Emotes
       Lore: '<gray>Unlocked: </gray><white><unlocked>'
-      Tooltip-Equip: <bold><aqua>Equip
+      Tooltip-Equip: <bold><aqua>Equipaggiare
       Tooltip-Unequip: <bold><red>Unequip
   Projectile-Effects:
     Title: <bold>Projectile Effects
     Button:
       Name: <bold><dark_purple>Projectile Effects
       Lore: '<gray>Unlocked: </gray><white><unlocked>'
-      Tooltip-Equip: <bold><aqua>Equip
+      Tooltip-Equip: <bold><aqua>Equipaggiare
       Tooltip-Unequip: <bold><red>Unequip
   Death-Effects:
     Title: <bold>Death Effects
     Button:
       Name: <bold><red>Death Effects
       Lore: '<gray>Unlocked: </gray><white><unlocked>'
-      Tooltip-Equip: <bold><aqua>Equip
+      Tooltip-Equip: <bold><aqua>Equipaggiare
       Tooltip-Unequip: <bold><red>Unequip
   Buy-Ammo:
     Title: <bold>Buy Ammo
@@ -1139,6 +1140,9 @@ Morphs:
   Shulker:
     name: <bold><dark_purple>Shulker
     Description: Likes to hide!
+  Sniffer:
+    name: <bold><green>Sniffer
+    Description: '*sniff sniff*'
 Hats:
   Equip: <prefix> <blue>You equipped <hatname> hat!
   Unequip: <prefix> <blue>You unequipped <hatname> hat!
@@ -1854,3 +1858,4 @@ Must-Remove:
   Emotes: <prefix> <bold><red>You must remove your helmet to equip an emote!
   Gadgets: <prefix> <bold><red>You must clear hotbar slot <slot> to equip a gadget!
   Mounts: <prefix> <bold><red>You must clear hotbar slot <slot> to equip this mount!
+Use-Rename-Pet-Command: <prefix> <red>Use <yellow>/uc rename</yellow> to rename

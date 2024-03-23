@@ -3,12 +3,16 @@ package be.isach.ultracosmetics.economy;
 import be.isach.ultracosmetics.UltraCosmetics;
 import be.isach.ultracosmetics.config.SettingsManager;
 import be.isach.ultracosmetics.util.Discount;
+import be.isach.ultracosmetics.util.SmartLogger;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Handles the current economy being used.
@@ -16,13 +20,26 @@ import java.util.List;
  * @author RadBuilder
  * @since 2.5
  */
+@SuppressWarnings("Convert2MethodRef")
 public class EconomyHandler {
+    private static final Map<String, EconomyHookLoader> economies = new HashMap<>();
+
+    static {
+        // Do NOT use method references, this requires loading the class, which will fail if the plugin is missing
+        economies.put("treasury", (uc, currency) -> new TreasuryHook(uc, currency));
+        economies.put("vault", (uc, currency) -> new VaultHook());
+        economies.put("playerpoints", (uc, currency) -> new PlayerPointsHook());
+        economies.put("peconomy", (uc, currency) -> new PEconomyHook(uc, currency));
+        // We can't directly reference CoinsEngine when compiling with Java 8, so we have to use reflection.
+        economies.put("coinsengine", (uc, currency) -> loadByReflection(uc, currency, "java17.CoinsEngineHook"));
+    }
+
     private EconomyHook economyHook;
     private boolean usingEconomy = false;
     private final List<Discount> discounts = new ArrayList<>();
 
     public EconomyHandler(UltraCosmetics ultraCosmetics) {
-        String economy = ultraCosmetics.getConfig().getString("Economy", "");
+        String economy = ultraCosmetics.getConfig().getString("Economy", "").toLowerCase();
         if (economy.isEmpty()) {
             ultraCosmetics.getSmartLogger().write("Economy not specified in the config, disabling economy features.");
             return;
@@ -31,23 +48,23 @@ public class EconomyHandler {
         if (currency.isEmpty()) currency = null;
 
         ultraCosmetics.getSmartLogger().write("");
+        EconomyHookLoader hookLoader = economies.get(economy);
+        if (hookLoader == null) {
+            ultraCosmetics.getSmartLogger().write(SmartLogger.LogLevel.ERROR, "Unknown economy: '" + economy + "'. Valid economies: " + String.join(", ", economies.keySet()));
+            return;
+        }
         try {
-            if (economy.equalsIgnoreCase("treasury")) {
-                economyHook = new TreasuryHook(ultraCosmetics, currency);
-            } else if (economy.equalsIgnoreCase("vault")) {
-                economyHook = new VaultHook();
-            } else if (economy.equalsIgnoreCase("playerpoints")) {
-                economyHook = new PlayerPointsHook();
-            } else if (economy.equalsIgnoreCase("peconomy")) {
-                economyHook = new PEconomyHook(ultraCosmetics, currency);
-            } else {
-                ultraCosmetics.getSmartLogger().write("Unknown economy: '" + economy + "'. Valid economies: Vault, PlayerPoints.");
-                return;
-            }
+            economyHook = hookLoader.load(ultraCosmetics, currency);
             ultraCosmetics.getSmartLogger().write("Hooked into " + economyHook.getName() + " for economy.");
             usingEconomy = true;
-        } catch (IllegalStateException | IllegalArgumentException e) {
-            ultraCosmetics.getSmartLogger().write(e.getMessage());
+        } catch (IllegalStateException | IllegalArgumentException | UnsupportedClassVersionError e) {
+            ultraCosmetics.getSmartLogger().write(SmartLogger.LogLevel.ERROR, e.getMessage());
+        } catch (ReflectiveOperationException e) {
+            e.printStackTrace();
+        }
+        if (!usingEconomy) {
+            ultraCosmetics.getSmartLogger().write(SmartLogger.LogLevel.WARNING, "Economy features will be disabled.");
+            return;
         }
         ultraCosmetics.getSmartLogger().write("");
 
@@ -78,5 +95,18 @@ public class EconomyHandler {
 
     public boolean isUsingEconomy() {
         return usingEconomy;
+    }
+
+    private static EconomyHook loadByReflection(UltraCosmetics ultraCosmetics, String currency, String className) throws ReflectiveOperationException {
+        Class<?> clazz = Class.forName("be.isach.ultracosmetics.economy." + className);
+        try {
+            return (EconomyHook) clazz.getConstructor(UltraCosmetics.class, String.class).newInstance(ultraCosmetics, currency);
+        } catch (InvocationTargetException e) {
+            // Unwrap the exception if it's an IllegalArgumentException, those are expected
+            if (e.getCause() instanceof IllegalArgumentException) {
+                throw (IllegalArgumentException) e.getCause();
+            }
+            throw e;
+        }
     }
 }

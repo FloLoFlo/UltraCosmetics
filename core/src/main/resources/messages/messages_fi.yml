@@ -16,7 +16,7 @@ Cancel: <bold><red>PERUUTA
 Buy-Ammo-Description: <bold><yellow>Osta <amount> <gadgetname> ammuksia </yellow></bold><bold><yellow>hintaan <price>$
 Buy-Cosmetic-Description: <bold><yellow>Osta <gadgetname>hintaan $<price>
 Right-Click-Buy-Ammo: <gray>Oikea Clikkaa ostaaksesi ammuksia
-Click-To-Purchase: <yellow>Click to purchase for $<price>
+Click-To-Purchase: <yellow>Klikkaa ostaaksesi hinnalla <price>
 Not-Enough-Money: <prefix> <bold><red>Sinulla ei ole tarpeeksi rahaa!
 Successful-Purchase: <prefix> <bold><green>Osto onnistui!
 Buy-Treasure-Key: <bold>Osta Kosmeettinen Avain
@@ -33,6 +33,7 @@ You-Won-Treasure-Chests: '<prefix> <bold><white>Voitit: <name>!'
 Treasure-Chest-Occupied: <prefix> <bold><red>All treasure locations are full, please wait and try again
 No-Ammo: <prefix> <bold><red>You don't have any ammo for this gadget!
 Cannot-Sell-Item: <prefix> <bold><red>You cannot sell this item!
+Structure-Chests-Disabled: <prefix> <bold><red>Structure chests are disabled!
 Clear:
   Cosmetics: <bold><red>Poista kosmetiikka
   Gadgets: <bold><red>Poista käytössä oleva lelu
@@ -1139,6 +1140,9 @@ Morphs:
   Shulker:
     name: <bold><dark_purple>Shulker
     Description: Likes to hide!
+  Sniffer:
+    name: <bold><green>Sniffer
+    Description: '*sniff sniff*'
 Hats:
   Equip: <prefix> <blue>Otit käyttöön <hatname> </blue><blue>hatun!
   Unequip: <prefix> <blue>You unequipped <hatname> hat!
@@ -1854,3 +1858,4 @@ Must-Remove:
   Emotes: <prefix> <bold><red>Sinun pitää poistaa kypärä käyttääksesi liikettä!
   Gadgets: <prefix> <bold><red>You must clear hotbar slot <slot> to equip a gadget!
   Mounts: <prefix> <bold><red>You must clear hotbar slot <slot> to equip this mount!
+Use-Rename-Pet-Command: <prefix> <red>Use <yellow>/uc rename</yellow> to rename

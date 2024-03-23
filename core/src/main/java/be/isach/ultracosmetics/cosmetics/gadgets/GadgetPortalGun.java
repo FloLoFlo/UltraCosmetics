@@ -2,6 +2,7 @@ package be.isach.ultracosmetics.cosmetics.gadgets;
 
 import be.isach.ultracosmetics.UltraCosmetics;
 import be.isach.ultracosmetics.config.MessageManager;
+import be.isach.ultracosmetics.config.SettingsManager;
 import be.isach.ultracosmetics.cosmetics.PlayerAffectingCosmetic;
 import be.isach.ultracosmetics.cosmetics.Updatable;
 import be.isach.ultracosmetics.cosmetics.type.GadgetType;
@@ -35,10 +36,16 @@ public class GadgetPortalGun extends Gadget implements PlayerAffectingCosmetic, 
     private final Set<UUID> playersOnCooldown = new HashSet<>();
     private final PortalLoc red = new PortalLoc(255, 0, 0);
     private final PortalLoc blue = new PortalLoc(31, 0, 127);
+    private final boolean affectsOthers;
+    private final XSound.SoundPlayer useSound;
+    private final XSound.Record teleportSound;
 
     public GadgetPortalGun(UltraPlayer owner, GadgetType type, UltraCosmetics ultraCosmetics) {
         super(owner, type, ultraCosmetics);
         displayCooldownMessage = false;
+        affectsOthers = SettingsManager.getConfig().getBoolean(getOptionPath("Affects-Others"));
+        useSound = XSound.ENTITY_ENDERMAN_TELEPORT.record().withVolume(0.2f).withPitch(1.5f).soundPlayer().forPlayers(getPlayer());
+        teleportSound = XSound.ENTITY_ENDERMAN_TELEPORT.record();
     }
 
     @Override
@@ -52,7 +59,7 @@ public class GadgetPortalGun extends Gadget implements PlayerAffectingCosmetic, 
     }
 
     private void handleClick(PortalLoc portalLoc) {
-        play(XSound.ENTITY_ENDERMAN_TELEPORT, getPlayer(), 0.2f, 1.5f);
+        useSound.play();
         List<Block> sight = getPlayer().getLastTwoTargetBlocks(null, 20);
         Block target = sight.get(1);
         Location playerFaceLoc = getPlayer().getEyeLocation().add(getPlayer().getEyeLocation().getDirection().multiply(0.6));
@@ -109,7 +116,7 @@ public class GadgetPortalGun extends Gadget implements PlayerAffectingCosmetic, 
         }
 
         // 'distanceSquared' is faster than 'distance', and sqrt(1) == 1 anyway
-        if (playerLoc.getWorld() != player.getWorld() || playerLoc.distanceSquared(portalLoc.getLocation()) > 1) {
+        if (playerLoc.getWorld() != portalLoc.getLocation().getWorld() || playerLoc.distanceSquared(portalLoc.getLocation()) > 1) {
             return false;
         }
         playersOnCooldown.add(player.getUniqueId());
@@ -133,7 +140,10 @@ public class GadgetPortalGun extends Gadget implements PlayerAffectingCosmetic, 
         }
         Player owner = getPlayer();
         for (Player player : owner.getWorld().getPlayers()) {
-            if (playersOnCooldown.contains(player.getUniqueId()) || (player != owner && !canAffect(player, owner))) {
+            if (playersOnCooldown.contains(player.getUniqueId())) {
+                continue;
+            }
+            if (player != owner && (!affectsOthers || !canAffect(player, owner))) {
                 continue;
             }
             if (!portalTeleportCheck(player, red, blue)) {
@@ -187,7 +197,7 @@ public class GadgetPortalGun extends Gadget implements PlayerAffectingCosmetic, 
             entity.teleport(location);
             entity.setVelocity(velocity);
             if (entity instanceof Player) {
-                play(XSound.ENTITY_ENDERMAN_TELEPORT, entity, 1, 1);
+                teleportSound.soundPlayer().forPlayers((Player) entity).play();
             }
         });
     }

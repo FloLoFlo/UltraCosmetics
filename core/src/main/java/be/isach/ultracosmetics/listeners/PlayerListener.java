@@ -22,7 +22,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -61,7 +60,8 @@ public class PlayerListener implements Listener {
     public void onJoin(final PlayerJoinEvent event) {
         UltraPlayer ultraPlayer = pm.getUltraPlayer(event.getPlayer());
         if (menuItemEnabled && event.getPlayer().hasPermission("ultracosmetics.receivechest") && SettingsManager.isAllowedWorld(event.getPlayer().getWorld())) {
-            ultraPlayer.giveMenuItem();
+            // Delay in case other plugins clear inventory on join
+            Bukkit.getScheduler().runTaskLater(ultraCosmetics, ultraPlayer::giveMenuItem, 1);
         }
 
         if (ultraCosmetics.getUpdateChecker() != null && ultraCosmetics.getUpdateChecker().isOutdated()) {
@@ -179,11 +179,6 @@ public class PlayerListener implements Listener {
             event.setCancelled(true);
             event.getItem().remove();
         }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerInteractGhost(PlayerInteractAtEntityEvent event) {
-        if (event.getRightClicked().hasMetadata("C_AD_ArmorStand")) event.setCancelled(true);
     }
 
     @EventHandler

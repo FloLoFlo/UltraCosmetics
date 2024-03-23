@@ -35,10 +35,10 @@ import be.isach.ultracosmetics.util.EntitySpawningManager;
 import be.isach.ultracosmetics.util.PermissionPrinter;
 import be.isach.ultracosmetics.util.PlayerUtils;
 import be.isach.ultracosmetics.util.Problem;
-import be.isach.ultracosmetics.util.ServerVersion;
 import be.isach.ultracosmetics.util.SmartLogger;
 import be.isach.ultracosmetics.util.SmartLogger.LogLevel;
 import be.isach.ultracosmetics.util.UpdateManager;
+import be.isach.ultracosmetics.version.ServerVersion;
 import be.isach.ultracosmetics.version.VersionManager;
 import be.isach.ultracosmetics.worldguard.WorldGuardManager;
 import com.cryptomorin.xseries.XMaterial;
@@ -212,12 +212,12 @@ public class UltraCosmetics extends JavaPlugin {
         } catch (IOException e1) {
             e1.printStackTrace();
         }
-        start();
+        start(true);
         // Load the class manually so it's available on shutdown
         PlayerUtils.class.getName();
     }
 
-    public void start() {
+    public void start(boolean firstRun) {
         long startTime = System.currentTimeMillis();
 
         // If this is a reload, it's important to clear all enable-time problems
@@ -285,7 +285,7 @@ public class UltraCosmetics extends JavaPlugin {
 
         if (activeProblems.contains(Problem.BAD_MC_VERSION)) {
             getSmartLogger().write();
-            getSmartLogger().write(LogLevel.WARNING, "This NMS version is unknown (" + UltraCosmeticsData.get().getRawNMSVersion() + "), but UltraCosmetics will try to continue running.");
+            getSmartLogger().write(LogLevel.WARNING, "This server version is unknown (" + ServerVersion.getMinecraftVersion() + "), but UltraCosmetics will try to continue running.");
         }
 
         // Initialize NMS Module
@@ -338,7 +338,10 @@ public class UltraCosmetics extends JavaPlugin {
         }
 
         // Set up WorldGuard if needed.
-        worldGuardManager.registerPhase2();
+        // WorldGuard handlers persist across UC reloads, so we only need to register them once.
+        if (firstRun) {
+            worldGuardManager.registerPhase2();
+        }
 
         // Set up economy if needed.
         setupEconomy();
@@ -446,7 +449,7 @@ public class UltraCosmetics extends JavaPlugin {
         shutdown();
         CosmeticType.removeAllTypes();
         getLogger().info("Starting up...");
-        start();
+        start(false);
         for (UCAddon addon : addons) {
             addon.reload(this);
         }
