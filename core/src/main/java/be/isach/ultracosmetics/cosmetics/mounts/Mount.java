@@ -12,7 +12,6 @@ import be.isach.ultracosmetics.run.MountRegionChecker;
 import be.isach.ultracosmetics.util.Area;
 import be.isach.ultracosmetics.util.BlockUtils;
 import be.isach.ultracosmetics.util.ItemFactory;
-import be.isach.ultracosmetics.version.ServerVersion;
 import com.cryptomorin.xseries.XMaterial;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
@@ -55,19 +54,13 @@ public abstract class Mount extends EntityCosmetic<MountType, Entity> implements
         super(ultraPlayer, type, ultraCosmetics);
     }
 
-    /**
-     * Equips the pet.
-     */
-    @SuppressWarnings("deprecation")
     @Override
     public void onEquip() {
 
         entity = spawnEntity();
 
         if (entity instanceof LivingEntity) {
-            if (UltraCosmeticsData.get().getServerVersion().isAtLeast(ServerVersion.v1_9)) {
-                ((LivingEntity) entity).getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(getType().getMovementSpeed());
-            }
+            ((LivingEntity) entity).getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(getType().getMovementSpeed());
             if (entity instanceof Ageable) {
                 ((Ageable) entity).setAdult();
             } else if (entity instanceof Slime) {
@@ -76,7 +69,8 @@ public abstract class Mount extends EntityCosmetic<MountType, Entity> implements
         }
         entity.setCustomNameVisible(true);
         entity.setCustomName(MessageManager.toLegacy(getType().getName(getPlayer())));
-        entity.setPassenger(getPlayer());
+        entity.addPassenger(getPlayer());
+        entity.setPersistent(false);
         entity.setMetadata("Mount", new FixedMetadataValue(UltraCosmeticsData.get().getPlugin(), "UltraCosmetics"));
         setupEntity();
 
@@ -110,11 +104,9 @@ public abstract class Mount extends EntityCosmetic<MountType, Entity> implements
         return true;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public void run() {
-        if (entity.getPassenger() != getPlayer()
-                && entity.getTicksLived() > 10) {
+        if (entity.getPassengers().isEmpty() && entity.getTicksLived() > 10) {
             clear();
             return;
         }
@@ -143,9 +135,7 @@ public abstract class Mount extends EntityCosmetic<MountType, Entity> implements
     @Override
     protected void onClear() {
         beingRemoved = true;
-        if (entity != null) {
-            entity.remove();
-        }
+        removeEntity();
 
         if (mountRegionTask != null) {
             mountRegionTask.cancel();
@@ -195,9 +185,6 @@ public abstract class Mount extends EntityCosmetic<MountType, Entity> implements
     }
 
     private boolean isHorse(EntityType type) {
-        if (UltraCosmeticsData.get().getServerVersion() == ServerVersion.v1_8) {
-            return type == EntityType.HORSE;
-        }
         return AbstractHorse.class.isAssignableFrom(type.getEntityClass());
     }
 

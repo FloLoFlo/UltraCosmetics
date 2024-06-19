@@ -9,8 +9,6 @@ import be.isach.ultracosmetics.util.PlayerUtils;
 import com.cryptomorin.xseries.XMaterial;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Horse;
-import org.bukkit.entity.Horse.Color;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -37,7 +35,6 @@ public class MountRudolph extends MountAbstractHorse {
         moveAntlers();
     }
 
-    @SuppressWarnings("deprecation")
     private ArmorStand spawnArmorStand(boolean right) {
         ArmorStand armorStand = getEntity().getWorld().spawn(getEyeLocation(), ArmorStand.class);
         armorStand.setBasePlate(false);
@@ -49,7 +46,8 @@ public class MountRudolph extends MountAbstractHorse {
         } else {
             armorStand.setRightArmPose(new EulerAngle(Math.PI, -Math.PI / 4, Math.PI / 4));
         }
-        armorStand.setItemInHand(DEAD_BUSH);
+        armorStand.getEquipment().setItemInMainHand(DEAD_BUSH);
+        armorStand.setPersistent(false);
         armorStand.setMetadata("C_AD_ArmorStand", new FixedMetadataValue(getUltraCosmetics(), getPlayer().getUniqueId().toString()));
         getUltraCosmetics().getArmorStandManager().makeUcStand(armorStand);
         return armorStand;
@@ -77,7 +75,7 @@ public class MountRudolph extends MountAbstractHorse {
         double y = noseLocation.getY();
         noseLocation.add(noseLocation.getDirection().multiply(1.15));
         noseLocation.setY(y + 0.127);
-        Particles.REDSTONE.display(255, 0, 0, noseLocation);
+        Particles.DUST.display(255, 0, 0, noseLocation);
         // Improves update time for antlers, but not a critical feature
         if (!UltraCosmeticsData.get().getVersionManager().isUsingNMS()) return;
         new Thread(() -> {
@@ -95,17 +93,6 @@ public class MountRudolph extends MountAbstractHorse {
 
         if (left != null) left.remove();
         if (right != null) right.remove();
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    protected Horse.Variant getVariant() {
-        return Horse.Variant.MULE;
-    }
-
-    @Override
-    protected Color getColor() {
-        return null;
     }
 
     private Location getEyeLocation() {

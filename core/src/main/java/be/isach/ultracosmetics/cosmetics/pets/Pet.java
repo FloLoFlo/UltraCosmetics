@@ -1,7 +1,6 @@
 package be.isach.ultracosmetics.cosmetics.pets;
 
 import be.isach.ultracosmetics.UltraCosmetics;
-import be.isach.ultracosmetics.UltraCosmeticsData;
 import be.isach.ultracosmetics.config.MessageManager;
 import be.isach.ultracosmetics.config.SettingsManager;
 import be.isach.ultracosmetics.cosmetics.EntityCosmetic;
@@ -10,7 +9,6 @@ import be.isach.ultracosmetics.cosmetics.type.PetType;
 import be.isach.ultracosmetics.player.UltraPlayer;
 import be.isach.ultracosmetics.util.ItemFactory;
 import be.isach.ultracosmetics.util.PetPathfinder;
-import be.isach.ultracosmetics.version.ServerVersion;
 import com.cryptomorin.xseries.XMaterial;
 import me.gamercoder215.mobchip.EntityBrain;
 import me.gamercoder215.mobchip.ai.goal.PathfinderLookAtEntity;
@@ -19,15 +17,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
-import org.bukkit.entity.Ageable;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Item;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Mob;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Tameable;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -83,24 +73,23 @@ public abstract class Pet extends EntityCosmetic<PetType, Mob> implements Updata
         this(owner, petType, ultraCosmetics, petType.getItemStack());
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     protected void onEquip() {
         initializeEntity();
     }
 
-    @SuppressWarnings("deprecation")
     private void initializeEntity() {
         entity = spawnEntity();
 
-        if (entity instanceof Ageable) {
-            Ageable ageable = (Ageable) entity;
+        if (entity instanceof Ageable ageable) {
             if (SettingsManager.getConfig().getBoolean("Pets-Are-Babies")) {
                 ageable.setBaby();
             } else {
                 ageable.setAdult();
             }
-            ageable.setAgeLock(true);
+            if (entity instanceof Breedable breedable) {
+                breedable.setAgeLock(true);
+            }
         }
 
         if (entity instanceof Tameable) {
@@ -116,7 +105,8 @@ public abstract class Pet extends EntityCosmetic<PetType, Mob> implements Updata
 
         entity.getEquipment().clear();
         entity.setRemoveWhenFarAway(false);
-        if (SettingsManager.getConfig().getBoolean("Pets-Are-Silent") && UltraCosmeticsData.get().getServerVersion().isAtLeast(ServerVersion.v1_9)) {
+        entity.setPersistent(false);
+        if (SettingsManager.getConfig().getBoolean("Pets-Are-Silent")) {
             entity.setSilent(true);
         }
 
@@ -149,8 +139,7 @@ public abstract class Pet extends EntityCosmetic<PetType, Mob> implements Updata
     }
 
     public boolean useArmorStandNameTag() {
-        // setCustomNameVisible(true) doesn't seem to work on 1.8, so we'll just use armor stands in that case
-        return isCustomEntity() || UltraCosmeticsData.get().getServerVersion() == ServerVersion.v1_8;
+        return isCustomEntity();
     }
 
     public boolean useMarkerArmorStand() {
@@ -220,13 +209,9 @@ public abstract class Pet extends EntityCosmetic<PetType, Mob> implements Updata
         armorStand.setMarker(useMarkerArmorStand());
         armorStand.setCustomNameVisible(true);
         FixedMetadataValue metadataValue = new FixedMetadataValue(getUltraCosmetics(), "C_AD_ArmorStand");
+        armorStand.setPersistent(false);
         armorStand.setMetadata("C_AD_ArmorStand", metadataValue);
-        setPassenger(entity, armorStand);
-    }
-
-    @SuppressWarnings("deprecation")
-    private void setPassenger(Entity entity, Entity passenger) {
-        entity.setPassenger(passenger);
+        entity.addPassenger(armorStand);
     }
 
     public void updateName() {
@@ -246,7 +231,7 @@ public abstract class Pet extends EntityCosmetic<PetType, Mob> implements Updata
 
         // Hide name if name is empty
         String nameString = MessageManager.toLegacy(newName);
-        getEntity().setCustomNameVisible(!nameString.equals(""));
+        getEntity().setCustomNameVisible(!nameString.isEmpty());
         rename.setCustomName(nameString);
     }
 

@@ -1,14 +1,11 @@
 package be.isach.ultracosmetics.cosmetics.gadgets;
 
 import be.isach.ultracosmetics.UltraCosmetics;
-import be.isach.ultracosmetics.UltraCosmeticsData;
 import be.isach.ultracosmetics.cosmetics.Category;
 import be.isach.ultracosmetics.cosmetics.Updatable;
 import be.isach.ultracosmetics.cosmetics.type.GadgetType;
 import be.isach.ultracosmetics.player.UltraPlayer;
 import be.isach.ultracosmetics.util.EntitySpawner;
-import be.isach.ultracosmetics.version.ServerVersion;
-import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -19,7 +16,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
-import org.spigotmc.event.entity.EntityDismountEvent;
 
 /**
  * Represents an instance of a ethereal pearl gadget summoned by a player.
@@ -40,13 +36,19 @@ public class GadgetEtherealPearl extends Gadget implements Updatable {
     }
 
     @Override
+    public void onEquip() {
+        super.onEquip();
+        getUltraCosmetics().getEntityDismountListener().addHandler(this, this::onEntityDismount);
+    }
+
+    @Override
     public void onClear() {
         if (pearl != null) {
             pearl.remove();
         }
+        getUltraCosmetics().getEntityDismountListener().removeHandler(this);
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     protected void onRightClick() {
         getOwner().removeCosmetic(Category.MOUNTS);
@@ -62,7 +64,7 @@ public class GadgetEtherealPearl extends Gadget implements Updatable {
         getPlayer().teleport(getPlayer().getLocation().add(0, 5, 0));
         // Teleportation can cause the pearl to hit the player in the same tick
         if (pearl == null) return;
-        if (!pearl.setPassenger(getPlayer())) {
+        if (!pearl.addPassenger(getPlayer())) {
             pearl.remove();
             return;
         }
@@ -79,16 +81,11 @@ public class GadgetEtherealPearl extends Gadget implements Updatable {
         }
     }
 
-    @EventHandler
-    public void onEntityDismount(EntityDismountEvent event) {
-        if (pearl == null) return;
-        if (event.getEntity() != getPlayer()) return;
-        if (UltraCosmeticsData.get().getServerVersion() == ServerVersion.v1_8) {
-            // 1.8.8 has weird timing problems with dismounting
-            Bukkit.getScheduler().runTask(getUltraCosmetics(), this::endRide);
-        } else {
+    public boolean onEntityDismount(Entity who, Entity dismounted) {
+        if (pearl != null && who == getPlayer()) {
             endRide();
         }
+        return false;
     }
 
     @EventHandler

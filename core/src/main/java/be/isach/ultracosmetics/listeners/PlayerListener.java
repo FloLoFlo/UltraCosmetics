@@ -1,12 +1,14 @@
 package be.isach.ultracosmetics.listeners;
 
 import be.isach.ultracosmetics.UltraCosmetics;
+import be.isach.ultracosmetics.UltraCosmeticsData;
 import be.isach.ultracosmetics.config.MessageManager;
 import be.isach.ultracosmetics.config.SettingsManager;
 import be.isach.ultracosmetics.cosmetics.Category;
 import be.isach.ultracosmetics.cosmetics.suits.ArmorSlot;
 import be.isach.ultracosmetics.player.UltraPlayer;
 import be.isach.ultracosmetics.player.UltraPlayerManager;
+import be.isach.ultracosmetics.player.profile.CosmeticsProfile;
 import be.isach.ultracosmetics.run.FallDamageManager;
 import be.isach.ultracosmetics.util.ItemFactory;
 import net.kyori.adventure.text.Component;
@@ -19,6 +21,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -43,6 +46,9 @@ public class PlayerListener implements Listener {
     private final ItemStack menuItem;
     private final boolean menuItemEnabled = SettingsManager.getConfig().getBoolean("Menu-Item.Enabled");
     private final int menuItemSlot = SettingsManager.getConfig().getInt("Menu-Item.Slot");
+    private final long joinItemDelay = SettingsManager.getConfig().getLong("Item-Delay.Join", 1);
+    private final long respawnItemDelay = SettingsManager.getConfig().getLong("Item-Delay.World-Change-Or-Respawn", 0);
+    private final boolean updateOnWorldChange = SettingsManager.getConfig().getBoolean("Always-Update-Cosmetics-On-World-Change", false);
 
     public PlayerListener(UltraCosmetics ultraCosmetics) {
         this.ultraCosmetics = ultraCosmetics;
@@ -59,9 +65,16 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onJoin(final PlayerJoinEvent event) {
         UltraPlayer ultraPlayer = pm.getUltraPlayer(event.getPlayer());
-        if (menuItemEnabled && event.getPlayer().hasPermission("ultracosmetics.receivechest") && SettingsManager.isAllowedWorld(event.getPlayer().getWorld())) {
+        if (SettingsManager.isAllowedWorld(event.getPlayer().getWorld())) {
             // Delay in case other plugins clear inventory on join
-            Bukkit.getScheduler().runTaskLater(ultraCosmetics, ultraPlayer::giveMenuItem, 1);
+            Bukkit.getScheduler().runTaskLater(ultraCosmetics, () -> {
+                if (menuItemEnabled && event.getPlayer().hasPermission("ultracosmetics.receivechest")) {
+                    ultraPlayer.giveMenuItem();
+                }
+                if (UltraCosmeticsData.get().areCosmeticsProfilesEnabled()) {
+                    ultraPlayer.getProfile().onLoad(CosmeticsProfile::equip);
+                }
+            }, joinItemDelay);
         }
 
         if (ultraCosmetics.getUpdateChecker() != null && ultraCosmetics.getUpdateChecker().isOutdated()) {
@@ -82,11 +95,12 @@ public class PlayerListener implements Listener {
         if (SettingsManager.isAllowedWorld(event.getPlayer().getWorld())) {
             UltraPlayer up = pm.getUltraPlayer(event.getPlayer());
             if (menuItemEnabled && event.getPlayer().hasPermission("ultracosmetics.receivechest")) {
-                up.giveMenuItem();
+                Bukkit.getScheduler().runTaskLater(ultraCosmetics, up::giveMenuItem, respawnItemDelay);
             }
-            // If the player joined an allowed world from a non-allowed world, re-equip their cosmetics.
-            if (!SettingsManager.isAllowedWorld(event.getFrom())) {
-                up.getProfile().equip();
+            // If the player joined an allowed world from a non-allowed world
+            // or we need to update their cosmetics for another reason, re-equip their cosmetics.
+            if (!SettingsManager.isAllowedWorld(event.getFrom()) || updateOnWorldChange) {
+                Bukkit.getScheduler().runTaskLater(ultraCosmetics, () -> up.getProfile().equip(), respawnItemDelay);
             }
         }
     }
@@ -95,7 +109,7 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onWorldChangeEarly(final PlayerChangedWorldEvent event) {
         UltraPlayer ultraPlayer = pm.getUltraPlayer(event.getPlayer());
-        if (!SettingsManager.isAllowedWorld(event.getPlayer().getWorld())) {
+        if (!SettingsManager.isAllowedWorld(event.getPlayer().getWorld()) || updateOnWorldChange) {
             // Disable cosmetics when joining a bad world.
             ultraPlayer.removeMenuItem();
             ultraPlayer.withPreserveEquipped(() -> {
@@ -117,7 +131,7 @@ public class PlayerListener implements Listener {
                 ultraPlayer.giveMenuItem();
             }
             ultraPlayer.getProfile().equip();
-        }, 1);
+        }, Math.max(1, respawnItemDelay));
     }
 
     @EventHandler
@@ -172,9 +186,8 @@ public class PlayerListener implements Listener {
         }
     }
 
-    @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerPickUpItem(org.bukkit.event.player.PlayerPickupItemEvent event) {
+    public void onPlayerPickUpItem(EntityPickupItemEvent event) {
         if (isMenuItem(event.getItem().getItemStack())) {
             event.setCancelled(true);
             event.getItem().remove();

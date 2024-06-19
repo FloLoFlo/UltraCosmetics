@@ -8,19 +8,12 @@ import org.bukkit.Bukkit;
 public enum ServerVersion {
 
     // Do not supply a mapping version when there is no NMS module.
-    v1_8(8, 8),
-    v1_9(9, 4),
-    v1_10(10, 2),
-    v1_11(11, 2),
-    v1_12(12, 2),
-    v1_13(13, 2),
-    v1_14(14, 4),
-    v1_15(15, 2),
-    v1_16(16, 5),
+    // 1.17 is the first version to support Java 17
     v1_17(17, 1),
     v1_18(18, 2),
-    v1_19(19, 4, "3009edc0fff87fa34680686663bd59df", 3),
-    v1_20(20, 4, "60a2bb6bf2684dc61c56b90d7c41bddc", 3),
+    v1_19(19, 4),
+    v1_20(20, 6, "ee13f98a43b9c5abffdcc0bb24154460", 4),
+    v1_21(21, 0, "229d7afc75b70a6c388337687ac4da1f", 1),
     NEW("???"),
     ;
 
@@ -31,7 +24,7 @@ public enum ServerVersion {
     // which is more often than actual NMS revisions happen. You can find this
     // value by checking the source code of this method:
     // org.bukkit.craftbukkit.util.CraftMagicNumbers#getMappingsVersion
-    // https://hub.spigotmc.org/stash/projects/SPIGOT/repos/craftbukkit/browse/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java#226
+    // https://hub.spigotmc.org/stash/projects/SPIGOT/repos/craftbukkit/browse/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java#233
     // getMappingsVersion was added in 1.13.2, earlier versions don't have it.
     private final String mappingsVersion;
     // The NMS revision the corresponding module is built for, or 0 for no module.
@@ -96,12 +89,8 @@ public enum ServerVersion {
         return this.compareTo(version) >= 0;
     }
 
-    public boolean offhandAvailable() {
-        return isAtLeast(v1_9);
-    }
-
     public boolean isMobChipAvailable() {
-        return isAtLeast(v1_13) && this != NEW && !isMobchipEdgeCase();
+        return this != NEW && !isMobchipEdgeCase();
     }
 
     public boolean isNmsSupported() {

@@ -9,7 +9,6 @@
 
 # UltraCosmetics
 
-**Welcome to the UltraCosmetics GitHub repository!**
 UltraCosmetics is a Spigot plugin that adds cosmetics to your Minecraft server!
 
 For all things on GitHub, please make sure you follow the [Contributing Guide](.github/CONTRIBUTING.md).
@@ -21,9 +20,13 @@ Please read the [Development section](#-development) in this README.
 
 ## ✅ Compatibility
 
-UltraCosmetics v3 officially supports the **Spigot** and **Paper** server software running the following Minecraft versions:
+UltraCosmetics v3 officially supports the **Spigot** and **Paper**.
 
-- **1.8.8** to **latest**
+Following the technical changes of Minecraft, the plugin abandon the old versions!
+
+- For **3.5** -> **1.8.8** to **1.20.4**
+- For **3.6+** -> **1.17.1** to **latest**
+
 
 For more information please check out the [Supported Configurations page](https://github.com/UltraCosmetics/UltraCosmetics/wiki/Supported-Configurations) in the Wiki.
 

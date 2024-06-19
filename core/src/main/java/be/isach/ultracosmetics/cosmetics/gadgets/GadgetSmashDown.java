@@ -7,10 +7,10 @@ import be.isach.ultracosmetics.cosmetics.type.GadgetType;
 import be.isach.ultracosmetics.player.UltraPlayer;
 import be.isach.ultracosmetics.util.BlockUtils;
 import be.isach.ultracosmetics.util.MathUtils;
-import be.isach.ultracosmetics.util.Particles;
 import be.isach.ultracosmetics.util.StructureRollback;
-import be.isach.ultracosmetics.version.VersionManager;
 import com.cryptomorin.xseries.XSound;
+import com.cryptomorin.xseries.particles.ParticleDisplay;
+import com.cryptomorin.xseries.particles.XParticle;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -37,14 +37,15 @@ import java.util.List;
  * @since 08-08-2015
  */
 public class GadgetSmashDown extends Gadget implements PlayerAffectingCosmetic, Updatable {
-
-    private boolean active = false;
-    private List<FallingBlock> fallingBlocks = new ArrayList<>();
-    private int i = 1;
-    private boolean playEffect;
+    private static final Particle BLOCK_PARTICLE = XParticle.BLOCK.get();
     private final XSound.SoundPlayer useSound;
     private final XSound.SoundPlayer smashSound;
     private final XSound.SoundPlayer landSound;
+    private final ParticleDisplay cloud = ParticleDisplay.of(XParticle.CLOUD).withLocationCaller(() -> getPlayer().getLocation());
+    private final List<FallingBlock> fallingBlocks = new ArrayList<>();
+    private boolean active = false;
+    private int i = 1;
+    private boolean playEffect;
 
     public GadgetSmashDown(UltraPlayer owner, GadgetType type, UltraCosmetics ultraCosmetics) {
         super(owner, type, ultraCosmetics);
@@ -61,7 +62,7 @@ public class GadgetSmashDown extends Gadget implements PlayerAffectingCosmetic, 
             @Override
             public void run() {
                 if (getOwner() != null && getPlayer() != null && isEquipped()) {
-                    Particles.CLOUD.display(getPlayer().getLocation());
+                    cloud.spawn();
                 } else {
                     cancel();
                 }
@@ -133,7 +134,6 @@ public class GadgetSmashDown extends Gadget implements PlayerAffectingCosmetic, 
         i++;
     }
 
-    @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockChangeState(EntityChangeBlockEvent event) {
         if (!fallingBlocks.remove(event.getEntity())) {
@@ -141,12 +141,8 @@ public class GadgetSmashDown extends Gadget implements PlayerAffectingCosmetic, 
         }
         event.setCancelled(true);
         FallingBlock fb = (FallingBlock) event.getEntity();
-        if (VersionManager.IS_VERSION_1_13) {
-            BlockData data = fb.getBlockData();
-            fb.getWorld().spawnParticle(Particle.BLOCK_CRACK, fb.getLocation(), 50, 0, 0, 0, 0.4d, data);
-        } else {
-            Particles.BLOCK_CRACK.display(new Particles.BlockData(fb.getMaterial(), event.getBlock().getData()), 0f, 0f, 0f, 0.4f, 50, fb.getLocation(), 128);
-        }
+        BlockData data = fb.getBlockData();
+        fb.getWorld().spawnParticle(BLOCK_PARTICLE, fb.getLocation(), 50, 0, 0, 0, 0.4d, data);
         landSound.play();
         event.getEntity().remove();
     }
