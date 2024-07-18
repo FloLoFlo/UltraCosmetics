@@ -24,6 +24,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -41,7 +42,8 @@ import java.util.function.Function;
  * @author iSach
  * @since 03-08-2015
  */
-public abstract class Pet extends EntityCosmetic<PetType, Mob> implements Updatable {
+public class Pet extends EntityCosmetic<PetType, Mob> implements Updatable {
+    private final boolean canRide = SettingsManager.getConfig().getBoolean("Pets-Can-Ride", false);
     protected final boolean showName = SettingsManager.getConfig().getBoolean("Show-Pets-Names", true);
 
     /**
@@ -59,6 +61,10 @@ public abstract class Pet extends EntityCosmetic<PetType, Mob> implements Updata
      * Sometimes modified before dropping to change what is dropped
      */
     protected ItemStack dropItem;
+
+    // While this is positive, the pet will not be removed due to being invalid.
+    // This is required because the pet may become briefly invalid while teleporting.
+    private int invalidBypassTicks = 0;
 
     public Pet(UltraPlayer owner, PetType petType, UltraCosmetics ultraCosmetics, ItemStack dropItem) {
         super(owner, petType, ultraCosmetics);
@@ -109,6 +115,9 @@ public abstract class Pet extends EntityCosmetic<PetType, Mob> implements Updata
         if (SettingsManager.getConfig().getBoolean("Pets-Are-Silent")) {
             entity.setSilent(true);
         }
+        if (!SettingsManager.getConfig().getBoolean("Pets-Have-Collision", true)) {
+            entity.setCollidable(false);
+        }
 
         entity.setMetadata("Pet", new FixedMetadataValue(getUltraCosmetics(), "UltraCosmetics"));
         setupEntity();
@@ -149,9 +158,14 @@ public abstract class Pet extends EntityCosmetic<PetType, Mob> implements Updata
     @Override
     public void run() {
         if (entity != null && !entity.isValid()) {
+            if (invalidBypassTicks > 0) {
+                invalidBypassTicks--;
+                return;
+            }
             clear();
             return;
         }
+        invalidBypassTicks = 0;
 
         if (!getOwner().isOnline() || getOwner().getCurrentPet() != this) {
             clear();
@@ -266,13 +280,23 @@ public abstract class Pet extends EntityCosmetic<PetType, Mob> implements Updata
 
     @EventHandler
     public void onPlayerTeleport(PlayerTeleportEvent event) {
-        if (event.getPlayer() == getPlayer()) getEntity().teleport(getPlayer());
+        if (event.getPlayer() == getPlayer()) {
+            entity.teleport(event.getTo());
+            invalidBypassTicks = 20;
+        }
     }
 
     // Going through portals seems to break pathfinders
     @EventHandler
     public void onPortal(EntityPortalEvent event) {
         if (event.getEntity() == getEntity()) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onMount(VehicleEnterEvent event) {
+        if (!canRide && event.getEntered() == entity) {
             event.setCancelled(true);
         }
     }
@@ -312,6 +336,28 @@ public abstract class Pet extends EntityCosmetic<PetType, Mob> implements Updata
      */
     protected <T extends Enum<T>> boolean enumCustomize(Class<T> types, String arg, Consumer<T> func) {
         return valueCustomize(s -> Enum.valueOf(types, s), arg, func);
+    }
+
+    /**
+     * This function is similar to enumCustomize, but is used for classes that
+     * used to be enums, but are now just classes with static fields.
+     * This method uses reflection so that it works whether it's a enum or a class.
+     *
+     * @param <T>   the type of the enum
+     * @param types the class of the enum (i.e. Variant.class)
+     * @param arg   the key to search for in the enum
+     * @param func  the function to call upon success
+     * @return true if arg was able to be parsed
+     */
+    @SuppressWarnings("unchecked")
+    protected <T> boolean oldEnumCustomize(Class<T> types, String arg, Consumer<T> func) {
+        return valueCustomize(s -> {
+            try {
+                return (T) types.getDeclaredField(s).get(null);
+            } catch (ReflectiveOperationException e) {
+                throw new IllegalArgumentException(e);
+            }
+        }, arg, func);
     }
 
     protected <T> boolean valueCustomize(Function<String, T> valueFunc, String arg, Consumer<T> func) {

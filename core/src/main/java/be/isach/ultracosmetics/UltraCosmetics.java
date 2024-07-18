@@ -30,8 +30,8 @@ import be.isach.ultracosmetics.run.FallDamageManager;
 import be.isach.ultracosmetics.run.InvalidWorldChecker;
 import be.isach.ultracosmetics.run.VanishChecker;
 import be.isach.ultracosmetics.treasurechests.TreasureChestManager;
-import be.isach.ultracosmetics.util.ArmorStandManager;
 import be.isach.ultracosmetics.util.EntitySpawningManager;
+import be.isach.ultracosmetics.util.InventoryViewHelper;
 import be.isach.ultracosmetics.util.PermissionPrinter;
 import be.isach.ultracosmetics.util.PlayerUtils;
 import be.isach.ultracosmetics.util.Problem;
@@ -124,14 +124,10 @@ public class UltraCosmetics extends JavaPlugin {
      */
     private Menus menus;
 
-    /**
-     * Manages armor stands.
-     */
-    private ArmorStandManager armorStandManager;
-
     private EconomyHandler economyHandler;
 
     private PermissionManager permissionManager;
+    private PlaceholderHook placeholderHook;
 
     private DiscordSRVHook discordHook;
 
@@ -333,7 +329,8 @@ public class UltraCosmetics extends JavaPlugin {
 
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             getSmartLogger().write();
-            new PlaceholderHook(this).register();
+            placeholderHook = new PlaceholderHook(this);
+            placeholderHook.register();
             getSmartLogger().write("Hooked into PlaceholderAPI");
         }
 
@@ -379,7 +376,6 @@ public class UltraCosmetics extends JavaPlugin {
         if (config.getBoolean("Prevent-Cosmetics-In-Vanish")) {
             new VanishChecker(this).runTaskTimerAsynchronously(this, 100, 100);
         }
-        armorStandManager = new ArmorStandManager(this);
 
         if (getServer().getPluginManager().isPluginEnabled("DiscordSRV")
                 && !SettingsManager.getConfig().getString("DiscordSRV-Loot-Channel", "0").equals("0")) {
@@ -430,7 +426,7 @@ public class UltraCosmetics extends JavaPlugin {
         if (!enableFinished) return;
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (player.getOpenInventory().getTopInventory().getHolder() instanceof CosmeticsInventoryHolder) {
+            if (InventoryViewHelper.getTopInventory(player).getHolder() instanceof CosmeticsInventoryHolder) {
                 player.closeInventory();
             }
         }
@@ -759,10 +755,6 @@ public class UltraCosmetics extends JavaPlugin {
         return mySqlConnectionManager;
     }
 
-    public ArmorStandManager getArmorStandManager() {
-        return armorStandManager;
-    }
-
     public EconomyHandler getEconomyHandler() {
         return economyHandler;
     }
@@ -773,6 +765,10 @@ public class UltraCosmetics extends JavaPlugin {
 
     public WorldGuardManager getWorldGuardManager() {
         return worldGuardManager;
+    }
+
+    public PlaceholderHook getPlaceholderHook() {
+        return placeholderHook;
     }
 
     public DiscordSRVHook getDiscordHook() {

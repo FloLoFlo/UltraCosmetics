@@ -19,8 +19,6 @@ public class GadgetPartyPopper extends Gadget {
     private static final Particle ITEM_PARTICLE = XParticle.ITEM.get();
     private final XSound.SoundPlayer sound;
 
-    private final XSound.SoundPlayer sound;
-
     public GadgetPartyPopper(UltraPlayer owner, GadgetType type, UltraCosmetics ultraCosmetics) {
         super(owner, type, ultraCosmetics);
         sound = XSound.ENTITY_CHICKEN_EGG.record().publicSound(true).soundPlayer().forPlayers(getPlayer());

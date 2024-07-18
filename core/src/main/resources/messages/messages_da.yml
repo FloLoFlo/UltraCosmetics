@@ -453,7 +453,7 @@ Mounts:
     Description: Your standard, everyday camel
   Equip: <prefix> <blue>You spawned <mountname>
   Unequip: <prefix> <blue>You despawned <mountname>
-  Cant-Spawn: <prefix> <bold><red>Monsters can't spawn here!
+  Cant-Spawn: <prefix> <bold><red>Monsters can't spawn in peaceful worlds!
   Not-Enough-Room: <prefix> <bold><red>Not enough room for a mount here!
 Particle-Effects:
   Equip: <prefix> <blue>You summoned <effectname>
@@ -1859,3 +1859,5 @@ Must-Remove:
   Gadgets: <prefix> <bold><red>You must clear hotbar slot <slot> to equip a gadget!
   Mounts: <prefix> <bold><red>You must clear hotbar slot <slot> to equip this mount!
 Use-Rename-Pet-Command: <prefix> <red>Use <yellow>/uc rename</yellow> to rename
+Commands-Disabled-During-Chest: <prefix> <bold><red>You can't use commands while opening a chest!
+No-Buy-Key-Permission: <prefix> <red><bold>You don't have permission to buy treasure keys!

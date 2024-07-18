@@ -42,7 +42,7 @@ public abstract class MountFlyingSnake extends Mount {
     public void onUpdate() {
         Player player = getPlayer();
         if (player == null) return;
-        Vector playerVector = player.getLocation().getDirection().multiply(0.7);
+        Vector playerVector = player.getLocation().getDirection().multiply(1.75 * getType().getMovementSpeed());
         entity.setVelocity(playerVector);
         Location loc;
         Location lastLocation = entity.getLocation().subtract(0, 1.3, 0);
@@ -71,7 +71,8 @@ public abstract class MountFlyingSnake extends Mount {
             if (i > 0) {
                 armorStand.getEquipment().setHelmet(tailItem);
             }
-            armorStand.setMetadata("NO_INTER", new FixedMetadataValue(getUltraCosmetics(), ""));
+            armorStand.setMetadata("NO_INTER", new FixedMetadataValue(getUltraCosmetics(), 1));
+            armorStand.setPersistent(false);
         }
     }
 

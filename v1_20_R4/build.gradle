@@ -1,8 +1,6 @@
 dependencies {
-<<<<<<<< HEAD:v1_20_R3/build.gradle
-    implementation 'org.spigotmc:spigot:1.20.4-R0.1-SNAPSHOT:remapped-mojang'
-========
+    // https://hub.spigotmc.org/stash/projects/SPIGOT/repos/spigot/browse
     implementation 'org.spigotmc:spigot:1.20.6-R0.1-SNAPSHOT:remapped-mojang'
->>>>>>>> upstream/master:v1_20_R4/build.gradle
+
     implementation project(':core')
 }

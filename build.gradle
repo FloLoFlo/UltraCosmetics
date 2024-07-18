@@ -12,11 +12,11 @@ allprojects {
     idea.module.downloadSources = true
 
     group = 'be.isach.UltraCosmetics'
-    version = '3.6.0.1-RELEASE'
+    version = '3.7-DEV-b2'
 
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
-        options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+        options.compilerArgs << '-Xlint:unchecked' << '-Xlint:deprecation'
     }
 
     java {
@@ -41,7 +41,7 @@ allprojects {
     }
 
     processResources {
-        inputs.property("version", project.version)
+        inputs.property('version', project.version)
 
         filter ReplaceTokens, tokens: [
                 'VERSION' : project.version,
@@ -64,13 +64,13 @@ allprojects {
 defaultTasks 'obfuscate'
 
 subprojects.each {
-    if (!it.hasProperty("remapMcVersion")) return
-    tasks.register("obf" + it.name, VersionedObfTask, it)
+    if (!it.hasProperty('remapMcVersion')) return
+    tasks.register('obf' + it.name, VersionedObfTask, it)
 }
 
 dependencies {
     subprojects.each { p ->
-        if (p.name == "core") {
+        if (p.name == 'core') {
             shaded(project(path: ':core', configuration: 'shadow'))
             return;
         }
@@ -86,78 +86,37 @@ subprojects { subproj ->
         mavenCentral()
 
         // AnvilGUI, Treasury
-        maven {
-            url = 'https://repo.codemc.io/repository/maven-snapshots/'
-        }
-
+        maven { url = 'https://repo.codemc.io/repository/maven-snapshots/' }
         // Lib's Disguises
-        maven {
-            url = 'https://repo.md-5.net/content/groups/public/'
-        }
-
+        maven { url = 'https://repo.md-5.net/content/groups/public/' }
         // WorldEdit
-        maven {
-            url = 'https://repo.aikar.co/nexus/content/groups/aikar'
-        }
-
+        maven { url = 'https://repo.aikar.co/nexus/content/groups/aikar' }
         // BungeeCord
-        maven {
-            url = 'https://oss.sonatype.org/content/repositories/snapshots'
-        }
-
+        maven { url = 'https://oss.sonatype.org/content/repositories/snapshots' }
         // PlaceholderAPI
-        maven {
-            url = 'https://repo.extendedclip.com/content/repositories/placeholderapi/'
-        }
-
+        maven { url = 'https://repo.extendedclip.com/content/repositories/placeholderapi/' }
         // PlayerPoints
-        maven {
-            url = 'https://repo.rosewooddev.io/repository/public/'
-        }
-
+        maven { url = 'https://repo.rosewooddev.io/repository/public/' }
         // SpigotMC
-        maven {
-            url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
-        }
-
+        maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
         // WorldGuard
-        maven {
-            url = 'https://maven.enginehub.org/repo/'
-        }
-
+        maven { url = 'https://maven.enginehub.org/repo/' }
         // DiscordSRV
-        maven {
-            url = 'https://nexus.scarsz.me/content/groups/public/'
-        }
-
+        maven { url = 'https://nexus.scarsz.me/content/groups/public/' }
         // ChestSort
-        maven {
-            url = 'https://hub.jeff-media.com/nexus/repository/jeff-media-public/'
-        }
-
+        maven { url = 'https://hub.jeff-media.com/nexus/repository/jeff-media-public/' }
         // Towny
-        maven {
-            url = 'https://repo.glaremasters.me/repository/towny/'
-        }
-
+        maven { url = 'https://repo.glaremasters.me/repository/towny/' }
         // PlayerAuctions
-        maven {
-            url = 'https://repo.olziedev.com/'
-        }
-
+        maven { url = 'https://repo.olziedev.com/' }
         // Vault, PEconomy, MobChipLite
-        maven {
-            url = 'https://jitpack.io'
-        }
-
+        maven { url = 'https://jitpack.io' }
         // Mojang Authlib
-        maven {
-            url = 'https://libraries.minecraft.net'
-        }
+        maven { url = 'https://libraries.minecraft.net' }
     }
     def version = 17
-    if (subproj.hasProperty("javaVersion")) {
-        version = subproj.property("javaVersion")
+    if (subproj.hasProperty('javaVersion')) {
+        version = subproj.property('javaVersion')
     }
     subproj.tasks.withType(JavaCompile).configureEach {
         javaCompiler = javaToolchains.compilerFor {
@@ -175,14 +134,14 @@ abstract class VersionedObfTask extends DefaultTask {
         dependsOn 'jar'
         description 'Generates an obfuscated version of the jar for use with Spigot.'
         group = 'jar preparation'
-        ext.toolingDir = System.getProperty("user.dir")
+        ext.toolingDir = System.getProperty('user.dir')
         ext.homeDir = project.gradle.gradleUserHomeDir.parent
     }
 
     @TaskAction
     def go() {
         def nms = subproj.name
-        def mcVer = subproj.getProperty("remapMcVersion")
+        def mcVer = subproj.getProperty('remapMcVersion')
         def filename = project.tasks.jar.archiveFileName.get()
         project.exec {
             workingDir project.buildDir
@@ -204,7 +163,7 @@ abstract class VersionedObfTask extends DefaultTask {
     }
 }
 
-tasks.register("obfuscate") {
+tasks.register('obfuscate') {
     dependsOn tasks.withType(VersionedObfTask)
     group = 'jar preparation'
 }

@@ -6,8 +6,9 @@ import be.isach.ultracosmetics.config.MessageManager;
 import be.isach.ultracosmetics.config.SettingsManager;
 import be.isach.ultracosmetics.util.SmartLogger.LogLevel;
 import com.cryptomorin.xseries.XMaterial;
-import com.cryptomorin.xseries.XSkull;
 import com.cryptomorin.xseries.XTag;
+import com.cryptomorin.xseries.profiles.builder.XSkull;
+import com.cryptomorin.xseries.profiles.objects.Profileable;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Color;
@@ -86,6 +87,7 @@ public class ItemFactory {
 
     public static Item setUnpickable(Item item) {
         item.setMetadata("UNPICKABLEUP", UNPICKABLE_META);
+        item.setPersistent(false);
         return item;
     }
 
@@ -185,8 +187,7 @@ public class ItemFactory {
 
     public static ItemStack createSkull(String url, String name) {
         ItemStack head = create(XMaterial.PLAYER_HEAD, name);
-        XSkull.setProfile(head, XSkull.getProfileOrDefault(XSkull.SkullInputType.TEXTURE_HASH, url));
-        return head;
+        return XSkull.of(head).profile(Profileable.detect(url)).apply();
     }
 
     public static ItemStack createColouredLeather(Material armourPart, int red, int green, int blue) {

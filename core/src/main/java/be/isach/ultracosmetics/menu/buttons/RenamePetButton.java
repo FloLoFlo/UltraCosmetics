@@ -13,6 +13,7 @@ import be.isach.ultracosmetics.menu.PurchaseData;
 import be.isach.ultracosmetics.mysql.MySqlConnectionManager;
 import be.isach.ultracosmetics.player.UltraPlayer;
 import be.isach.ultracosmetics.util.ItemFactory;
+import be.isach.ultracosmetics.util.TextUtil;
 import com.cryptomorin.xseries.XMaterial;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
@@ -77,7 +78,7 @@ public class RenamePetButton implements Button {
                             return Collections.singletonList(AnvilGUI.ResponseAction.close());
                         }
                     }).open(ultraPlayer.getBukkitPlayer());
-        } catch (ExceptionInInitializerError e) {
+        } catch (ExceptionInInitializerError | NoClassDefFoundError e) {
             ultraPlayer.sendMessage(MessageManager.getMessage("Use-Rename-Pet-Command"));
         }
     }
@@ -86,7 +87,7 @@ public class RenamePetButton implements Button {
         int price = SettingsManager.getConfig().getInt("Pets-Rename.Requires-Money.Price");
         int discountPrice = UltraCosmeticsData.get().getPlugin().getEconomyHandler().calculateDiscountPrice(ultraPlayer.getBukkitPlayer(), price);
         Component renameTitle = MessageManager.getMessage("Menu.Purchase-Rename.Button.Showcase",
-                Placeholder.unparsed("price", String.valueOf(discountPrice)),
+                Placeholder.unparsed("price", TextUtil.formatNumber(discountPrice)),
                 Placeholder.component("name", MessageManager.getMiniMessage().deserialize(name)));
         ItemStack showcaseItem = ItemFactory.create(XMaterial.NAME_TAG, renameTitle);
 

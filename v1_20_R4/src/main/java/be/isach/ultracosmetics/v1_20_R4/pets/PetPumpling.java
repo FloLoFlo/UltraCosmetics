@@ -1,26 +1,15 @@
-<<<<<<<< HEAD:v1_20_R3/src/main/java/be/isach/ultracosmetics/v1_20_R3/pets/PetPumpling.java
-package be.isach.ultracosmetics.v1_20_R3.pets;
-========
 package be.isach.ultracosmetics.v1_20_R4.pets;
->>>>>>>> upstream/master:v1_20_R4/src/main/java/be/isach/ultracosmetics/v1_20_R4/pets/PetPumpling.java
 
 import be.isach.ultracosmetics.UltraCosmetics;
 import be.isach.ultracosmetics.cosmetics.type.PetType;
 import be.isach.ultracosmetics.player.UltraPlayer;
-import be.isach.ultracosmetics.util.Particles;
-<<<<<<<< HEAD:v1_20_R3/src/main/java/be/isach/ultracosmetics/v1_20_R3/pets/PetPumpling.java
-import be.isach.ultracosmetics.v1_20_R3.customentities.Pumpling;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_20_R3.entity.CraftPlayer;
-========
 import be.isach.ultracosmetics.v1_20_R4.customentities.Pumpling;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.craftbukkit.v1_20_R4.entity.CraftPlayer;
->>>>>>>> upstream/master:v1_20_R4/src/main/java/be/isach/ultracosmetics/v1_20_R4/pets/PetPumpling.java
 import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.ItemStack;
 
@@ -49,7 +38,8 @@ public class PetPumpling extends CustomEntityPet {
     public void onUpdate() {
         // Is this necesssary?
         getNMSEntity().setRemainingFireTicks(0);
-        Particles.FLAME.display(0.2f, 0.2f, 0.2f, ((Zombie) getEntity()).getEyeLocation(), 3);
+        Location loc = ((Zombie) getEntity()).getEyeLocation();
+        loc.getWorld().spawnParticle(Particle.FLAME, loc, 3, 0.2, 0.2, 0.2);
         // this doesn't seem to work when just in setupEntity()
         getNMSEntity().setInvisible(true);
     }
